@@ -1,0 +1,24 @@
+﻿<Window x:Class="Multi_Tool.DPack_Compression"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Multi_Tool"
+        mc:Ignorable="d"
+        Title="Multitools - Disney DPAK Compression" Height="450" Width="800" WindowStartupLocation="CenterOwner">
+    <Grid>
+        <Button x:Name="button" Content="Go Back" FontSize="16" Click="Go_Back_Button_Click" ClickMode="Press" Margin="0,10,10,0" HorizontalAlignment="Right" VerticalAlignment="Top" Width="65" Height="30" RenderTransformOrigin="0.466,0.581"/>
+        <Button x:Name="StartDPak_Button" Content="Start DPAK Extraction" HorizontalAlignment="Right" Margin="0,91,154,0" VerticalAlignment="Top" Width="150" Height="20" RenderTransformOrigin="0.12,0.509" Click="StartDPak_Button_Click" ClickMode="Press" Cursor="Hand"/>
+        <Button x:Name="StopRip_Button" Content="Start DPAK Compression" HorizontalAlignment="Right" Margin="0,116,154,0" VerticalAlignment="Top" Width="150" Height="20" RenderTransformOrigin="0.5,-0.448" Click="StartDPakCompress_Button_Click" ClickMode="Press" Cursor="Hand"/>
+        <ListView x:Name="Output_List" Margin="0,0,455,0" ToolTip="Output Log">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <Label x:Name="label" Content="----- Ripping Options -----" HorizontalAlignment="Right" Margin="0,178,98,0" VerticalAlignment="Top" FontSize="20.5" FontWeight="Bold"/>
+        <Button x:Name="SelectFile_Button" Content="Select File" HorizontalAlignment="Right" Margin="0,220,154,0" VerticalAlignment="Top" Width="150" Height="20" RenderTransformOrigin="0.12,0.509" Click="SelectFile_Button_Click" Cursor="Hand" ToolTip="Opens a file prompt to select a file."/>
+        <Button x:Name="ExportDir_Button" Content="Select Export Dir" HorizontalAlignment="Right" Margin="0,245,154,0" VerticalAlignment="Top" Width="150" Height="20" RenderTransformOrigin="0.12,0.509" Click="ExportDir_Button_Click" Cursor="Hand" ToolTip="Opens a folder prompt to select an export path."/>
+    </Grid>
+</Window>
