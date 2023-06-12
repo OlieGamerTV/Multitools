@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Multi_Tool"
         mc:Ignorable="d"
-        Title="Multitools - Disney BKV Reader" Height="450" Width="800" WindowStartupLocation="CenterOwner">
+        Title="Multitools - 'Adobe' Alpine | BKV Reader" Height="450" Width="800" WindowStartupLocation="CenterOwner">
     <Grid>
         <Button x:Name="button" Content="Go Back" FontSize="16" Click="Go_Back_Button_Click" ClickMode="Press" Margin="0,10,10,0" HorizontalAlignment="Right" VerticalAlignment="Top" Width="65" Height="30" RenderTransformOrigin="0.466,0.581"/>
         <Button x:Name="StartDPak_Button" Content="Export BKV to..." HorizontalAlignment="Right" Margin="0,91,154,0" VerticalAlignment="Top" Width="150" Height="20" RenderTransformOrigin="0.12,0.509" Click="StartBKV_Button_Click" ClickMode="Press" Cursor="Hand"/>
