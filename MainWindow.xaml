@@ -19,7 +19,7 @@
         </Canvas>
         <Canvas x:Name="Disney_Canvas">
             <Label x:Name="Disney_Title" Content="Multi-Tools Utility" FontSize="24" FontWeight="Bold" Canvas.Left="292.581" Canvas.Top="25.998" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <Label x:Name="Main_Desc_Copy" Content="Disney Alpine Area" FontSize="16" Canvas.Left="323.71" Canvas.Top="67.921" Height="30" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            <Label x:Name="Main_Desc_Copy" Content="'Adobe' Alpine Area" FontSize="16" Canvas.Left="316.546" Canvas.Top="67.921" Height="30" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             <Label x:Name="File_Desc_Copy" Content="Compressor / Decompressor Tools" FontSize="16" Canvas.Left="273.745" Canvas.Top="102.921" HorizontalAlignment="Left" VerticalAlignment="Center"/>
             <Button x:Name="DPack_Button" Content="DPack Compression" Canvas.Left="300" Canvas.Top="139.201" FontSize="16" Height="30" Width="200" HorizontalAlignment="Left" VerticalAlignment="Center" Click="DPack_Button_Click"/>
             <Button x:Name="BKV_Button" Content="BKV Compression" Canvas.Left="300" Canvas.Top="174.201" FontSize="16" Height="30" Width="200" HorizontalAlignment="Left" VerticalAlignment="Center" Click="BKV_Button_Click"/>
