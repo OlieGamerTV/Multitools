@@ -28,5 +28,17 @@
             <ComboBoxItem Content="LZMA Compression"/>
             <ComboBoxItem Content="SERF Package"/>
         </ComboBox>
+        <ComboBox x:Name="compressionLevel" HorizontalAlignment="Right" Margin="0,281,162,0" VerticalAlignment="Top" Width="180" RenderTransformOrigin="0.5,0.534" SelectedIndex="6" MouseLeave="compressionLevel_MouseLeave"  Cursor="Hand">
+            <ComboBoxItem Content="Level 0 / None"/>
+            <ComboBoxItem Content="Level 1 / Best Speed"/>
+            <ComboBoxItem Content="Level 2"/>
+            <ComboBoxItem Content="Level 3"/>
+            <ComboBoxItem Content="Level 4"/>
+            <ComboBoxItem Content="Level 5"/>
+            <ComboBoxItem Content="Level 6 / Default"/>
+            <ComboBoxItem Content="Level 7"/>
+            <ComboBoxItem Content="Level 8"/>
+            <ComboBoxItem Content="Level 9 / Best Compression"/>
+        </ComboBox>
     </Grid>
 </Window>

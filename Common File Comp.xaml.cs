@@ -26,6 +26,7 @@ namespace Multi_Tool
     {
         CompressionTool fileRipper = null;
         string currentFileIndex = "AUTOMATIC";
+        int currentFileCompression = 6;
         List<string> fileIndexes = new List<string>() { "AUTOMATIC", "ZLIB", "DEFLATE", "GZIP", "LZMA", "SERF" };
 
         public Common_File_Comp()
@@ -77,6 +78,18 @@ namespace Multi_Tool
         private void FileDecomp_Button_Click(object sender, RoutedEventArgs e)
         {
             fileRipper.StartZlibFile(true);
+        }
+
+        private void compressionLevel_MouseLeave(object sender, MouseEventArgs e)
+        {
+            if (currentFileCompression == compressionLevel.SelectedIndex)
+            {
+            }
+            else
+            {
+                currentFileCompression = compressionLevel.SelectedIndex;
+                fileRipper.SetCompLevel(currentFileCompression);
+            }
         }
     }
 }
