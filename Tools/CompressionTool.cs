@@ -14,6 +14,7 @@ namespace Multi_Tool.Tools
     class CompressionTool
     {
         private string exportPath, fileName, filePath, algorithmType;
+        private CompressionLevel currentFileCompLevel;
         private byte[] dataText;
         private OutputLog output;
         private SERFExtractor serfExtractor;
@@ -43,8 +44,7 @@ namespace Multi_Tool.Tools
                     case AlgorithmEnums.DEFLATE:
                     case AlgorithmEnums.GZIP:
                     case AlgorithmEnums.LZMA:
-                        var comp = Task.Run(() => Compression_Comp(filePath));
-                        comp.Wait();
+                        Compression_Comp(filePath);
                         break;
                     case AlgorithmEnums.SERF:
                         serfExtractor.PassData(exportPath, fileName, filePath, dataText);
@@ -60,7 +60,7 @@ namespace Multi_Tool.Tools
                     case AlgorithmEnums.DEFLATE:
                     case AlgorithmEnums.GZIP:
                     case AlgorithmEnums.LZMA:
-                        var comp = Task.Run(() => Compression_Comp(filePath));
+                        Compression_Comp(filePath);
                         break;
                     case AlgorithmEnums.SERF:
                         //serf.StartSERFRip();
@@ -69,7 +69,7 @@ namespace Multi_Tool.Tools
             }
         }
 
-        public async Task Compression_Decomp()
+        public void Compression_Decomp()
         {
             try
             {
@@ -109,34 +109,41 @@ namespace Multi_Tool.Tools
             catch (Exception ex)
             {
                 output.WriteToOutput("CompressionTool: Decompression failed. Error: " + ex);
-                await Task.Yield();
+                return;
             }
         }
 
         public void Compression_Comp(string filePath)
         {
+            if (filePath == null)
+            {
+                GetDirs(true);
+            }
             try
             {
-                output.WriteToOutput("Opening File: " + filePath);
+                output.WriteToOutput("--------------------------", "Opening File: " + filePath);
                 Stream readStream = File.Open(filePath, FileMode.Open);
-                Stream writeStream = File.Open(exportPath + "/" + fileName, FileMode.Create);
+                Stream writeStream = File.Open(exportPath, FileMode.Create);
                 MemoryStream memory = new MemoryStream();
                 switch (algorithm)
                 {
                     case AlgorithmEnums.ZLIB:
-                        ZlibStream zlib = new ZlibStream(readStream, CompressionMode.Compress);
+                        output.WriteToOutput("Compressing file using ZLIB... Compression Level: " + (int)currentFileCompLevel);
+                        ZlibStream zlib = new ZlibStream(readStream, CompressionMode.Compress, currentFileCompLevel);
                         zlib.CopyTo(writeStream);
                         zlib.Dispose();
                         zlib.Close();
                         break;
                     case AlgorithmEnums.DEFLATE:
-                        DeflateStream def = new DeflateStream(readStream, CompressionMode.Compress);
+                        output.WriteToOutput("Compressing file using Deflate... Compression Level: " + (int)currentFileCompLevel);
+                        DeflateStream def = new DeflateStream(readStream, CompressionMode.Compress, currentFileCompLevel);
                         def.CopyTo(memory);
                         def.Dispose();
                         def.Close();
                         break;
                     case AlgorithmEnums.GZIP:
-                        GZipStream gzip = new GZipStream(readStream, CompressionMode.Compress);
+                        output.WriteToOutput("Compressing file using GZIP... Compression Level: " + (int)currentFileCompLevel);
+                        GZipStream gzip = new GZipStream(readStream, CompressionMode.Compress, currentFileCompLevel);
                         gzip.CopyTo(memory);
                         gzip.Dispose();
                         gzip.Close();
@@ -147,14 +154,12 @@ namespace Multi_Tool.Tools
                 writeStream.Flush();
                 memory.Dispose();
                 memory.Close();
+                output.WriteToOutput("Compression finished!", "Compressed file has been saved to: " + exportPath);
             }
             catch (Exception ex)
             {
                 output.WriteToOutput("CompressionTool: Compression failed. Error: " + ex);
-            }
-            if (filePath == null)
-            {
-                GetDirs(true);
+                return;
             }
         }
 
@@ -201,13 +206,13 @@ namespace Multi_Tool.Tools
                 switch (algorithm)
                 {
                     case AlgorithmEnums.ZLIB:
-                        ZlibStream zlib = new ZlibStream(memory, CompressionMode.Compress);
+                        ZlibStream zlib = new ZlibStream(memory, CompressionMode.Compress, currentFileCompLevel);
                         zlib.CopyTo(resultMemory);
                         zlib.Dispose();
                         zlib.Close();
                         break;
                     case AlgorithmEnums.DEFLATE:
-                        DeflateStream def = new DeflateStream(memory, CompressionMode.Compress);
+                        DeflateStream def = new DeflateStream(memory, CompressionMode.Compress, currentFileCompLevel);
                         def.CopyTo(resultMemory);
                         def.Dispose();
                         def.Close();
@@ -234,13 +239,51 @@ namespace Multi_Tool.Tools
             Debug.WriteLine("Algorithm Compression set to: " + algorithm.ToString().ToUpper());
         }
 
+        public void SetCompLevel(int level)
+        {
+            switch (level)
+            {
+                case 0:
+                    currentFileCompLevel = CompressionLevel.Level0;
+                    return;
+                case 1:
+                    currentFileCompLevel = CompressionLevel.Level1;
+                    return;
+                case 2:
+                    currentFileCompLevel = CompressionLevel.Level2;
+                    return;
+                case 3:
+                    currentFileCompLevel = CompressionLevel.Level3;
+                    return;
+                case 4:
+                    currentFileCompLevel = CompressionLevel.Level4;
+                    return;
+                case 5:
+                    currentFileCompLevel = CompressionLevel.Level5;
+                    return;
+                default:
+                case 6:
+                    currentFileCompLevel = CompressionLevel.Level6;
+                    return;
+                case 7:
+                    currentFileCompLevel = CompressionLevel.Level7;
+                    return;
+                case 8:
+                    currentFileCompLevel = CompressionLevel.Level8;
+                    return;
+                case 9:
+                    currentFileCompLevel = CompressionLevel.Level9;
+                    return;
+            }
+        }
+
         public void GetDirs(bool isFile)
         {
-            OpenFileDialog fileDialog = new OpenFileDialog();
-            fileDialog.CheckPathExists = true;
             // Set the Dialog Browser flags accordingly depending on if we're looking for a file or an export path, and open the File Dialog.
             if (isFile)
             {
+                OpenFileDialog fileDialog = new OpenFileDialog();
+                fileDialog.CheckPathExists = true;
                 fileDialog.Title = "Open";
                 fileDialog.ValidateNames = true;
                 fileDialog.CheckFileExists = true;
@@ -264,16 +307,32 @@ namespace Multi_Tool.Tools
             }
             else
             {
-                fileDialog.Title = "Export";
-                fileDialog.ValidateNames = false;
+                SaveFileDialog fileDialog = new SaveFileDialog();
+                fileDialog.CheckPathExists = true;
+                fileDialog.Title = "Export Compressed File";
+                fileDialog.ValidateNames = true;
                 fileDialog.CheckFileExists = false;
-                fileDialog.FileName = "Enter the folder you want to export to and press Open.";
+                fileDialog.Filter = "Common File Compressions (*.zlib;*.deflate;*.gz)|*.zlib;*.deflate;*.gz|All Files (*.*)|*.*";
+                fileDialog.FileName = "compressed.zlib";
                 // Code for looking for a export path.
                 if (fileDialog.ShowDialog() == true)
                 {
-                    string? path = Path.GetDirectoryName(fileDialog.FileName);
+                    string? path = fileDialog.FileName;
                     output.WriteToOutput("Selected export path: " + path);
                     exportPath = path;
+                    switch (Path.GetExtension(fileDialog.FileName))
+                    {
+                        default:
+                        case ".zlib":
+                            SetAlgorithm(AlgorithmEnums.ZLIB);
+                            break;
+                        case ".deflate":
+                            SetAlgorithm(AlgorithmEnums.DEFLATE);
+                            break;
+                        case ".gz":
+                            SetAlgorithm(AlgorithmEnums.GZIP);
+                            break;
+                    }
                 }
                 else
                 {
