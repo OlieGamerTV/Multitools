@@ -951,8 +951,9 @@ namespace Multi_Tool.Tools.BKV
 
         public string GetString(int param1)
         {
-            if (!(strings.ContainsKey(param1)))
+            if (!strings.ContainsKey(param1))
             {
+                if (__data == null) return "! Data Not Found !";
                 __data.Position = (__stringPoolIndex + param1);
                 strings[param1] = __data.ReadUTFBytes((uint)(__data.Length - __stringPoolIndex - param1));
             }

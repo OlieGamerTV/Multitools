@@ -484,7 +484,7 @@ namespace Multi_Tool.Result_Windows
                 new XAttribute("count", normals.Count));
             foreach (var position in normals)
             {
-                floats.Add(position);
+                floats.Add(-position);
                 if (floats.Count >= 3)
                 {
                     XText normal = new XText(string.Join(' ', floats.ToArray()) + " ");

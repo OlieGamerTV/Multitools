@@ -164,8 +164,8 @@ namespace Multi_Tool.Result_Windows
             node.Add(nodeName, nodeParent, parentIndex, numChildren);
 
             // Writing the Samples for the chosen Node
-            XElement samples = new XElement("Samples", new XAttribute("count", animationData.numFrames));
-            for (int i = 0; i < animationData.numFrames; i++)
+            XElement samples = new XElement("Samples", new XAttribute("count", animationData.skeletalAnimation.frameData.Count));
+            for (int i = 0; i < animationData.skeletalAnimation.frameData.Count; i++)
             {
                 XElement sample = new XElement("S");
                 XAttribute time = new XAttribute("t", animationData.skeletalAnimation.frameData[i].time);
@@ -186,8 +186,8 @@ namespace Multi_Tool.Result_Windows
             XAttribute numChild = new XAttribute("numChildren", 3);
             XAttribute filter = new XAttribute("filterType", "pos");
             controller.Add(name, classOf, numChild, filter);
-            XElement samples = new XElement("Samples", new XAttribute("count", animationData.numFrames));
-            for (int i = 0; i < animationData.numFrames; i++)
+            XElement samples = new XElement("Samples", new XAttribute("count", animationData.skeletalAnimation.frameData.Count));
+            for (int i = 0; i < animationData.skeletalAnimation.frameData.Count; i++)
             {
                 XElement sample = new XElement("P3Val");
                 XAttribute time = new XAttribute("t", animationData.skeletalAnimation.frameData[i].time);
@@ -208,8 +208,8 @@ namespace Multi_Tool.Result_Windows
             XAttribute filter = new XAttribute("filterType", "rot");
             XAttribute eulerOrder = new XAttribute("eulerOrder", "XYZ");
             controller.Add(name, classOf, numChild, filter);
-            XElement samples = new XElement("Samples", new XAttribute("count", animationData.numFrames));
-            for (int i = 0; i < animationData.numFrames; i++)
+            XElement samples = new XElement("Samples", new XAttribute("count", animationData.skeletalAnimation.frameData.Count));
+            for (int i = 0; i < animationData.skeletalAnimation.frameData.Count; i++)
             {
                 XElement sample = new XElement("RVal");
                 XAttribute time = new XAttribute("t", animationData.skeletalAnimation.frameData[i].time);
