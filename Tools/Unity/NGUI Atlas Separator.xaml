@@ -1,0 +1,15 @@
+﻿<Window x:Class="Multi_Tool.Tools.Unity.NGUI_Atlas_Separator"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Multi_Tool.Tools.Unity"
+        mc:Ignorable="d"
+        Title="Multitools - NGUI Atlas Separator" Height="450" Width="1000" WindowStartupLocation="CenterOwner" MinHeight="450" MinWidth="1000">
+    <Grid>
+        <DataGrid x:Name="Atlas_Sprites" d:ItemsSource="{d:SampleData ItemCount=5}" Panel.ZIndex="1" MinHeight="121" VerticalContentAlignment="Stretch" Margin="0,217,0,0" ScrollViewer.VerticalScrollBarVisibility="Visible" HorizontalContentAlignment="Stretch" MinWidth="1000"/>
+        <Button x:Name="AtlasTextureLoader_Button" Content="Load Atlas Texture" Click="AtlasTextureLoader_Button_Click" HorizontalAlignment="Center" Margin="0,88,0,0" VerticalAlignment="Top" Width="150" Height="20"/>
+        <Button x:Name="AtlasLoader_Button" Content="Load Atlas Prefab" Click="AtlasLoader_Button_Click"  HorizontalAlignment="Center" Margin="0,113,0,0" VerticalAlignment="Top" Width="150" Height="20"/>
+        <Button x:Name="ExportFiles_Button" Content="Export Sprites from Atlas" Click="ExportFiles_Button_Click"  HorizontalAlignment="Center" Margin="0,168,0,0" VerticalAlignment="Top" Width="150" Height="20"/>
+    </Grid>
+</Window>

@@ -247,6 +247,7 @@ namespace Multi_Tool.Tools
                 while (i < numFiles)
                 {
                     bytes = new ByteArray(packedBytes.ReadBytes(0, lengths[i]));
+                    bytes.wrapAround = true;
                     items[names[i]] = bytes;
                     t += (int)lengths[i];
                     Debug.WriteLine("Item " + i + ": " + BitConverter.ToString(bytes.data.ToArray()));

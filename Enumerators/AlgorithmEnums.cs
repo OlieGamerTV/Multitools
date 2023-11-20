@@ -13,7 +13,9 @@ namespace Multi_Tool.Enumerators
             zlib,
             deflate,
             gzip,
+            lz,
             lzma,
+            huffman,
             serf
         }
 
@@ -21,8 +23,11 @@ namespace Multi_Tool.Enumerators
         public const string ZLIB = "ZLIB";
         public const string DEFLATE = "DEFLATE";
         public const string GZIP = "GZIP";
+        public const string LZ = "LZ";
         public const string LZMA = "LZMA";
+        public const string HUFFMAN = "HUFFMAN";
         public const string SERF = "SERF";
+        public static List<string> fileIndexes = new List<string>() { "AUTOMATIC", "ZLIB", "DEFLATE", "GZIP", "LZ", "LZMA", "HUFFMAN", "SERF" };
 
 
         public AlgorithmTypes algorithmTypes;

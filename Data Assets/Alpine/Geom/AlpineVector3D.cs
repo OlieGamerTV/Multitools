@@ -4,6 +4,8 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using System.Transactions;
+using System.Windows.Media.Imaging;
 
 namespace Alpine.Geom
 {
@@ -348,6 +350,16 @@ namespace Alpine.Geom
         public override string ToString()
         {
             return "[ X: " + x + ", Y: " + y + ", Z: " + z + ", W: " + w + " ]";
+        }
+
+        public string XYZToString()
+        {
+            return string.Join(" ", x, y, z);
+        }
+
+        public string XYZWToString()
+        {
+            return string.Join(" ", x, y, z, w);
         }
 
         public string ToStringFixed(uint fractionDigits)

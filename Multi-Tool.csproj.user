@@ -13,6 +13,12 @@
     <Compile Update="DPack Compression.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Genesis3D.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Result Windows\Alpine Animation List.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Result Windows\Alpine Model List.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -23,6 +29,12 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="PVR Converter.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Tools\Unity\NGUI Atlas Display.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Tools\Unity\NGUI Atlas Separator.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Window1.xaml.cs">
@@ -39,6 +51,12 @@
     <Page Update="Common File Comp.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="Genesis3D.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Result Windows\Alpine Animation List.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Result Windows\Alpine Model List.xaml">
       <SubType>Designer</SubType>
     </Page>
@@ -52,6 +70,12 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="PVR Converter.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Tools\Unity\NGUI Atlas Display.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Tools\Unity\NGUI Atlas Separator.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Window1.xaml">

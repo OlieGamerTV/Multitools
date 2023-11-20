@@ -1,0 +1,14 @@
+﻿<Window x:Class="Multi_Tool.Genesis3D"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Multi_Tool"
+        mc:Ignorable="d"
+        Title="Multitools - Genesis3D" Height="450" Width="800">
+    <Grid>
+        <Button x:Name="Select_File" Content="Select File" HorizontalAlignment="Left" Margin="515,257,0,0" VerticalAlignment="Top" Width="80" Height="20" Click="Select_File_Click"/>
+        <Button x:Name="Load_File" Content="Load File" HorizontalAlignment="Left" Margin="515,0,0,0" VerticalAlignment="Center" Width="80" Height="20" Click="Load_File_Click"/>
+
+    </Grid>
+</Window>

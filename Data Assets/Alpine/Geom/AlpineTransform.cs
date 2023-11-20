@@ -69,5 +69,19 @@ namespace Alpine.Geom
         {
             return "{ T: " + translation.ToString() + " R: " + rotation.ToString() + " S: " + scale + " }";
         }
+
+        public string SimpleToString()
+        {
+            return string.Join(" ", 
+                translation.x, 
+                translation.y, 
+                translation.z, 
+                translation.w, 
+                rotation.x, 
+                rotation.y, 
+                rotation.z, 
+                rotation.w, 
+                scale);
+        }
     }
 }

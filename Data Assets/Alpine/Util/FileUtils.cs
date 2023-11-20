@@ -116,21 +116,21 @@ namespace Alpine.Util
                 param2 = param1.ReadUnsignedByte();
                 loc3--;
             }
-            switch (param2)
+            switch ((Encoding)param2)
             {
-                case (int)Encoding.ENCODING_NONE:
+                case Encoding.ENCODING_NONE:
                     loc3 /= 4;
                     break;
-                case (int)Encoding.ENCODING_BYTE:
-                case (int)Encoding.ENCODING_BYTE_SIGNED:
-                case (int)Encoding.UNENCODED_BYTE:
-                case (int)Encoding.UNENCODED_BYTE_SIGNED:
+                case Encoding.ENCODING_BYTE:
+                case Encoding.ENCODING_BYTE_SIGNED:
+                case Encoding.UNENCODED_BYTE:
+                case Encoding.UNENCODED_BYTE_SIGNED:
                     break;
-                case (int)Encoding.ENCODING_SHORT:
-                case (int)Encoding.ENCODING_SHORT_SIGNED:
-                case (int)Encoding.UNENCODED_SHORT:
-                case (int)Encoding.UNENCODED_SHORT_SIGNED:
-                    loc3 /= 4;
+                case Encoding.ENCODING_SHORT:
+                case Encoding.ENCODING_SHORT_SIGNED:
+                case Encoding.UNENCODED_SHORT:
+                case Encoding.UNENCODED_SHORT_SIGNED:
+                    loc3 /= 2;
                     break;
             }
             ByteArray loc4 = AlpineUtils.CreateByteArray(loc3 * 4);
@@ -138,33 +138,33 @@ namespace Alpine.Util
             List<float> paramList = new List<float>();
             while (loc6 < loc3)
             {
-                switch (param2)
+                switch ((Encoding)param2)
                 {
-                    case (int)Encoding.ENCODING_NONE:
+                    case Encoding.ENCODING_NONE:
                         loc5 = param1.ReadFloat();
                         break;
-                    case (int)Encoding.ENCODING_BYTE: 
-                        loc5 = param1.ReadUnsignedByte() / 255;
+                    case Encoding.ENCODING_BYTE: 
+                        loc5 = param1.ReadUnsignedByte() / 255f;
                         break;
-                    case (int)Encoding.ENCODING_BYTE_SIGNED: 
-                        loc5 = param1.ReadByte() / 127;
+                    case Encoding.ENCODING_BYTE_SIGNED: 
+                        loc5 = param1.ReadByte() / 127f;
                         break;
-                    case (int)Encoding.ENCODING_SHORT:
-                        loc5 = param1.ReadShort() / 65535;
+                    case Encoding.ENCODING_SHORT:
+                        loc5 = param1.ReadUnsignedShort() / 65535f;
                         break;
-                    case (int)Encoding.ENCODING_SHORT_SIGNED:
-                        loc5 = param1.ReadShort() / 32767;
+                    case Encoding.ENCODING_SHORT_SIGNED:
+                        loc5 = param1.ReadShort() / 32767f;
                         break;
-                    case (int)Encoding.UNENCODED_BYTE:
+                    case Encoding.UNENCODED_BYTE:
                         loc5 = param1.ReadUnsignedByte();
                         break;
-                    case (int)Encoding.UNENCODED_BYTE_SIGNED:
+                    case Encoding.UNENCODED_BYTE_SIGNED:
                         loc5 = param1.ReadByte();
                         break;
-                    case (int)Encoding.UNENCODED_SHORT:
+                    case Encoding.UNENCODED_SHORT:
                         loc5 = param1.ReadUnsignedShort();
                         break;
-                    case (int)Encoding.UNENCODED_SHORT_SIGNED:
+                    case Encoding.UNENCODED_SHORT_SIGNED:
                         loc5 = param1.ReadShort();
                         break;
                 }
@@ -172,27 +172,8 @@ namespace Alpine.Util
                 loc4.WriteFloat(loc5);
                 loc6++;
             }
-            int count = 0;
-            List<float> tempList = new List<float>();
             Debug.WriteLine("ReadVectorOfNumbers: Encoding: " + param2 + ", Amount of numbers read: " + paramList.Count);
-            Debug.WriteLine("ReadVectorOfNumbers: [ ");
-            foreach (float value in paramList)
-            {
-                if (count < debug_length)
-                {
-                    tempList.Add(value);
-                    count++;
-                }
-                else
-                {
-                    Debug.WriteLine(string.Join(' ', tempList));
-                    tempList = new List<float>();
-                    tempList.Add(value);
-                    count = 1;
-                }
-
-            }
-            Debug.WriteLine(string.Join(' ', tempList) + " ]");
+            Debug.WriteLine("ReadVectorOfNumbers: [ " + string.Join(' ', paramList) + " ]");
             return loc4;
         }
 
@@ -223,7 +204,7 @@ namespace Alpine.Util
                 case (int)Encoding.ENCODING_SHORT_SIGNED:
                 case (int)Encoding.UNENCODED_SHORT:
                 case (int)Encoding.UNENCODED_SHORT_SIGNED:
-                    loc3 /= 4;
+                    loc3 /= 2;
                     break;
             }
             ByteArray loc4 = AlpineUtils.CreateByteArray(loc3 * 4);
@@ -237,16 +218,16 @@ namespace Alpine.Util
                         loc5 = param1.ReadFloat();
                         break;
                     case (int)Encoding.ENCODING_BYTE:
-                        loc5 = param1.ReadUnsignedByte() / 255;
+                        loc5 = param1.ReadUnsignedByte() / 255f;
                         break;
                     case (int)Encoding.ENCODING_BYTE_SIGNED:
-                        loc5 = param1.ReadByte() / 127;
+                        loc5 = param1.ReadByte() / 127f;
                         break;
                     case (int)Encoding.ENCODING_SHORT:
-                        loc5 = param1.ReadShort() / 65535;
+                        loc5 = param1.ReadUnsignedShort() / 65535f;
                         break;
                     case (int)Encoding.ENCODING_SHORT_SIGNED:
-                        loc5 = param1.ReadShort() / 32767;
+                        loc5 = param1.ReadShort() / 32767f;
                         break;
                     case (int)Encoding.UNENCODED_BYTE:
                         loc5 = param1.ReadUnsignedByte();
@@ -265,27 +246,8 @@ namespace Alpine.Util
                 loc4.WriteFloat(loc5);
                 loc6++;
             }
-            int count = 0;
-            List<float> tempList = new List<float>();
             Debug.WriteLine("ReadNumberVectorToList: Encoding: " + param2 + ", Amount of numbers read: " + paramList.Count);
-            Debug.WriteLine("ReadNumberVectorToList: [ ");
-            foreach (float value in paramList)
-            {
-                if (count < debug_length)
-                {
-                    tempList.Add(value);
-                    count++;
-                }
-                else
-                {
-                    Debug.WriteLine(string.Join(' ', tempList));
-                    tempList = new List<float>();
-                    tempList.Add(value);
-                    count = 1;
-                }
-
-            }
-            Debug.WriteLine(string.Join(' ', tempList) + " ]");
+            Debug.WriteLine("ReadNumberVectorToList: [ " + string.Join(' ', paramList) + " ]");
             return paramList;
         }
 
@@ -352,19 +314,16 @@ namespace Alpine.Util
             Debug.WriteLine("ReadVectorOfInt: [ ");
             foreach (int value in loc4)
             {
-                if (count < 3)
-                {
-                    tempList.Add(value);
-                    count++;
-                }
-                else
+                tempList.Add(value);
+                count++;
+                if (count >= 3)
                 {
                     Debug.WriteLine(string.Join(' ', tempList));
                     tempList = new List<int>();
                     count = 0;
                 }
             }
-            Debug.WriteLine(" ]");
+            Debug.WriteLine(string.Join(' ', tempList) + " ]");
             return loc4;
         }
     }

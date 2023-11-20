@@ -17,6 +17,7 @@ namespace Utilities.Flash
         private int position = 0, length;
         public string endian = Endian.BIG_ENDIAN;
         public List<byte> data;
+        public bool wrapAround = false;
 
         public ByteArray(byte[] param1 = null) : base()
         {
@@ -61,11 +62,12 @@ namespace Utilities.Flash
             }
         }
 
-        public void Uncompress(string algorithm = CompressionAlgorithm.ZLIB)
+        public void Uncompress(string algorithm = CompressionAlgorithm.ZLIB, int startPos = 0)
         {
             try
             {
                 MemoryStream outputStream;
+                MemoryStream readStream = new MemoryStream(data.ToArray());
                 switch (algorithm)
                 {
                     case CompressionAlgorithm.DEFLATE: // For Decompressing Data from DEFLATE streams.
@@ -85,9 +87,9 @@ namespace Utilities.Flash
                         break;
                     case CompressionAlgorithm.ZLIB: // For Decompressing Data from ZLIB streams.
                         outputStream = new MemoryStream();
-                        ZlibStream zLib = new ZlibStream(outputStream, CompressionMode.Decompress, CompressionLevel.Default, true);
+                        ZlibStream zLib = new ZlibStream(readStream, CompressionMode.Decompress, CompressionLevel.Default, true);
                         Debug.WriteLine("Decompressing bytes from current ByteArray, Data Length: " + data.Count);
-                        zLib.Write(data.ToArray(), 0, data.Count);
+                        zLib.CopyTo(outputStream);
                         Debug.WriteLine("Decompressed bytes from current ByteArray, writing new data.");
                         zLib.Flush();
                         data = new List<byte>();
@@ -145,7 +147,19 @@ namespace Utilities.Flash
             {
                 for (int i = 0; i < temp.Length; i++)
                 {
-                    temp[i] = data[position + i];
+                    if (position >= data.Count && wrapAround)
+                    {
+                        Debug.WriteLine("ByteArray.ReadDouble: Wrapping around to the beginning of the data.");
+                        position = 0;
+                    }
+                    try
+                    {
+                        temp[i] = data[position + i];
+                    }
+                    catch (Exception e)
+                    {
+                        throw new EndOfStreamException("EOF ERROR: There is not enough sufficient data available to read");
+                    }
                 }
                 position += 8;
                 switch (endian)
@@ -170,7 +184,19 @@ namespace Utilities.Flash
                 byte[] temp = new byte[4];
                 for (int i = 0; i < temp.Length; i++)
                 {
-                    temp[i] = data[position + i];
+                    if (position >= data.Count)
+                    {
+                        Debug.WriteLine("ByteArray.ReadFloat: Wrapping around to the beginning of the data.");
+                        position = 0;
+                    }
+                    try
+                    {
+                        temp[i] = data[position + i];
+                    }
+                    catch (Exception e)
+                    {
+                        throw new EndOfStreamException("EOF ERROR: There is not enough sufficient data available to read");
+                    }
                 }
                 position += 4;
                 switch (endian)
@@ -195,7 +221,19 @@ namespace Utilities.Flash
             {
                 for (int i = 0; i < temp.Length; i++)
                 {
-                    temp[i] = data[position + i];
+                    if (position >= data.Count && wrapAround)
+                    {
+                        Debug.WriteLine("ByteArray.ReadInt: Wrapping around to the beginning of the data.");
+                        position = 0;
+                    }
+                    try
+                    {
+                        temp[i] = data[position + i];
+                    }
+                    catch (Exception e)
+                    {
+                        throw new EndOfStreamException("EOF ERROR: There is not enough sufficient data available to read");
+                    }
                 }
                 position += 4;
                 switch (endian)
@@ -220,7 +258,19 @@ namespace Utilities.Flash
                 byte[] temp = new byte[4];
                 for (int i = 0; i < temp.Length; i++)
                 {
-                    temp[i] = data[position + i];
+                    if (position >= data.Count && wrapAround)
+                    {
+                        Debug.WriteLine("ByteArray.ReadUnsignedInt: Wrapping around to the beginning of the data.");
+                        position = 0;
+                    }
+                    try
+                    {
+                        temp[i] = data[position + i];
+                    }
+                    catch (Exception e)
+                    {
+                        throw new EndOfStreamException("EOF ERROR: There is not enough sufficient data available to read");
+                    }
                 }
                 position += 4;
                 switch (endian)
@@ -245,7 +295,19 @@ namespace Utilities.Flash
                 byte[] temp = new byte[2];
                 for (int i = 0; i < temp.Length; i++)
                 {
-                    temp[i] = data[position + i];
+                    if (position >= data.Count && wrapAround)
+                    {
+                        Debug.WriteLine("ByteArray.ReadShort: Wrapping around to the beginning of the data.");
+                        position = 0;
+                    }
+                    try
+                    {
+                        temp[i] = data[position + i];
+                    }
+                    catch(Exception e)
+                    {
+                        throw new EndOfStreamException("EOF ERROR: There is not enough sufficient data available to read");
+                    }
                 }
                 position += 2;
                 switch (endian)
@@ -270,6 +332,11 @@ namespace Utilities.Flash
                 byte[] temp = new byte[2];
                 for (int i = 0; i < temp.Length; i++)
                 {
+                    if (position >= data.Count && wrapAround)
+                    {
+                        Debug.WriteLine("ByteArray.ReadUnsignedShort: Wrapping around to the beginning of the data.");
+                        position = 0;
+                    }
                     temp[i] = data[position + i];
                 }
                 position += 2;
@@ -295,6 +362,11 @@ namespace Utilities.Flash
             {
                 for (int i = 0; i < temp.Length; i++)
                 {
+                    if (position >= data.Count && wrapAround)
+                    {
+                        Debug.WriteLine("ByteArray.ReadUTF: Wrapping around to the beginning of the data.");
+                        position = 0;
+                    }
                     temp[i] = data[position + i];
                 }
                 ushort length;
@@ -327,7 +399,6 @@ namespace Utilities.Flash
             int tempPos = position;
             if (data != null || position < data.Count)
             {
-
                 string tempStr = Encoding.UTF8.GetString(ReadBytes(0, length));
                 string[] bigString = tempStr.Split('\0');
                 position = tempPos;
@@ -345,7 +416,6 @@ namespace Utilities.Flash
             int tempPos = position;
             if (data != null || position < data.Count)
             {
-
                 string tempStr = Encoding.UTF8.GetString(ReadBytes(0, (uint)length));
                 string[] bigString = tempStr.Split('\0');
                 position = tempPos;
@@ -363,6 +433,11 @@ namespace Utilities.Flash
             int temp = data[position];
             if (data != null || position < data.Count)
             {
+                if (position >= data.Count && wrapAround)
+                {
+                    Debug.WriteLine("ByteArray.ReadBoolean: Wrapping around to the beginning of the data.");
+                    position = 0;
+                }
                 position++;
                 if (temp >= 1)
                 {
@@ -442,6 +517,23 @@ namespace Utilities.Flash
                 case Endian.BIG_ENDIAN:
                 default:
                     BinaryPrimitives.TryWriteSingleBigEndian(valueData, value);
+                    break;
+            }
+            data.InsertRange(position, valueData);
+            position += valueData.Length;
+        }
+
+        public void WriteFloat(double value)
+        {
+            byte[] valueData = new byte[4];
+            switch (endian)
+            {
+                case Endian.LITTLE_ENDIAN:
+                    BinaryPrimitives.TryWriteSingleLittleEndian(valueData, Convert.ToSingle(value));
+                    break;
+                case Endian.BIG_ENDIAN:
+                default:
+                    BinaryPrimitives.TryWriteSingleBigEndian(valueData, Convert.ToSingle(value));
                     break;
             }
             data.InsertRange(position, valueData);

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Alpine.Renderables.Models.Animation.Data
 {
-    internal class BlendShapeTargetAnimationData : AnimationSegmentData
+    public class BlendShapeTargetAnimationData : AnimationSegmentData
     {
         public string _base, target;
         public List<float> frames;

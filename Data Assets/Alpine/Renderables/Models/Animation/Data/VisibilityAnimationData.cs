@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Alpine.Renderables.Models.Animation.Data
 {
-    internal class VisibilityAnimationData : AnimationSegmentData
+    public class VisibilityAnimationData : AnimationSegmentData
     {
         public List<string> targets;
         public List<bool> frames;

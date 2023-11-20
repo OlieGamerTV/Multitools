@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Alpine.Renderables.Models.Animation.Data
 {
-    internal class AnimationSegmentDataFrame
+    public class AnimationSegmentDataFrame
     {
         public uint frame;
         public float time;

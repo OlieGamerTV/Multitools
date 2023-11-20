@@ -5,10 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Multi_Tool.Result_Windows"
         mc:Ignorable="d"
-        Title="MultiTools - Model Builder [Model List]" Height="450" Width="500">
+        Title="MultiTools - Model Builder [Model List]" Height="450" Width="500" MinHeight="450" MinWidth="500">
     <Grid>
         <TreeView x:Name="ModelTreeList" Margin="0,0,250,0"/>
-        <Button x:Name="ExportDae" Content="Export To DAE" Margin="0,328,43,0" HorizontalAlignment="Right" VerticalAlignment="Top" Width="158" Height="23" Click="ExportDae_Click"/>
+        <Button x:Name="ExportDae" Content="Export To..." Margin="0,328,43,0" HorizontalAlignment="Right" VerticalAlignment="Top" Width="158" Height="23" Click="ExportDae_Click"/>
 
     </Grid>
 </Window>

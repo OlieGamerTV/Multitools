@@ -36,6 +36,7 @@ namespace Multi_Tool
         List<Mesh> modelMesh;
         MergedMesh mergedMesh;
         ByteArray modelFile, texturesFile;
+
         public Model_Builder()
         {
             InitializeComponent();
@@ -48,26 +49,30 @@ namespace Multi_Tool
             Output_List.Items.Clear();
             GetFileDirs(animFilter, animName);
             animation.Load(fileName, modelFile, texturesFile);
+            Alpine_Animation_List animation_List = new Alpine_Animation_List(animation);
         }
 
         private void StartModel_Button_Click(object sender, RoutedEventArgs e)
         {
             Output_List.Items.Clear();
             GetFileDirs(modelFilter, modelName);
-            Mouse.OverrideCursor = Cursors.AppStarting;
-            model.Load(fileName, modelFile, texturesFile);
-            Mouse.OverrideCursor = null;
-            modelMesh = new List<Mesh>();
-            for(int i = 0; i < model.meshes.Count; i++)
+            if(modelFile != null)
             {
-                modelMesh.Insert(i, new Mesh(model.meshes[i]));
+                Mouse.OverrideCursor = Cursors.AppStarting;
+                model.Load(fileName, modelFile, texturesFile);
+                Mouse.OverrideCursor = null;
+                modelMesh = new List<Mesh>();
+                for (int i = 0; i < model.meshes.Count; i++)
+                {
+                    modelMesh.Insert(i, new Mesh(model.meshes[i]));
+                }
+                mergedMesh = new MergedMesh(0);
+                foreach (Mesh mesh in modelMesh)
+                {
+                    mergedMesh.Merge(mesh);
+                }
+                Alpine_Model_List model_List = new Alpine_Model_List(model);
             }
-            mergedMesh = new MergedMesh(0);
-            foreach(Mesh mesh in modelMesh)
-            {
-                mergedMesh.Merge(mesh);
-            }
-            Alpine_Model_List model_List = new Alpine_Model_List(model);
         }
 
         private void Go_Back_Button_Click(object sender, RoutedEventArgs e)
@@ -103,33 +108,36 @@ namespace Multi_Tool
                 modelPath = path;
                 Debug.WriteLine("Selected model file to rip set to: " + path);
                 modelFile = new ByteArray(File.ReadAllBytes(path));
+
+                // Ask if there is an attached MMT File (Texture Package)
+                result = MessageBox.Show(message, caption, button);
+                if (result == MessageBoxResult.Yes)
+                {
+                    fileDialog.Title = "Open Textures File";
+                    fileDialog.Filter = "Alpine Textures Package (*.mmt)|*.mmt|All Files (*.*)|*.*";
+                    fileDialog.FileName = "Select the Alpine Textures Package file you want to use.";
+                    if (fileDialog.ShowDialog() == true)
+                    {
+                        path = Path.GetFullPath(fileDialog.FileName);
+                        Debug.WriteLine("Selected path: " + path);
+                        texturesPath = path;
+                        Debug.WriteLine("Selected textures file to rip set to: " + path);
+                        texturesFile = new ByteArray(File.ReadAllBytes(path));
+                    }
+                    else
+                    {
+                        Debug.WriteLine("No file selected or file does not exist!");
+                    }
+                }
+                else if (result == MessageBoxResult.No)
+                {
+                    texturesFile = null;
+                }
             }
             else
             {
+                modelFile = null;
                 Debug.WriteLine("No file selected or file does not exist!");
-            }
-            result = MessageBox.Show(message, caption, button);
-            if(result == MessageBoxResult.Yes)
-            {
-                fileDialog.Title = "Open Textures File";
-                fileDialog.Filter = "Alpine Textures Package (*.mmt)|*.mmt|All Files (*.*)|*.*";
-                fileDialog.FileName = "Select the Alpine Textures Package file you want to use.";
-                if (fileDialog.ShowDialog() == true)
-                {
-                    string path = Path.GetFullPath(fileDialog.FileName);
-                    Debug.WriteLine("Selected path: " + path);
-                    texturesPath = path;
-                    Debug.WriteLine("Selected textures file to rip set to: " + path);
-                    texturesFile = new ByteArray(File.ReadAllBytes(path));
-                }
-                else
-                {
-                    Debug.WriteLine("No file selected or file does not exist!");
-                }
-            }
-            else if(result == MessageBoxResult.No)
-            {
-                texturesFile = null;
             }
         }
     }

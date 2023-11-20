@@ -14,7 +14,7 @@ using System.Windows.Controls;
 
 namespace Alpine.Renderables.Models.Animation.Data
 {
-    internal class AnimationData
+    public class AnimationData
     {
         public const int VERSION = 6;
         public static List<int> SUPPORTED_VERSIONS = new List<int> { 4, 5, 6 };

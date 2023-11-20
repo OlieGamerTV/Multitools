@@ -8,8 +8,9 @@ namespace Multi_Tool.Enumerators
 {
     internal class SERFInputNames
     {
-        public static string MAGIC_RIFF = "52-49-46-46", 
-            MAGIC_WAV = "57-41-56-45-66-6D-74-20", 
+        public static string MAGIC_RIFF = "52-49-46-46",
+            MAGIC_WAV = "57-41-56-45-66-6D-74-20",
+            MAGIC_XWMA = "58-57-4D-41-66-6D-74-20",
             MAGIC_AVI = "41-56-49-20-4C-49-53-54";
         public static string MAGIC_PNG = "89-50-4E-47-0D-0A-1A-0A";
         public static string MAGIC_JPG = "FF-D8-FF-E0", 

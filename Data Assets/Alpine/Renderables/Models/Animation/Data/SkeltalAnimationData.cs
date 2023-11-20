@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Alpine.Renderables.Models.Animation.Data
 {
-    internal class SkeltalAnimationData : AnimationSegmentData
+    public class SkeltalAnimationData : AnimationSegmentData
     {
         public bool precomputed;
         public List<JointAnimationData> joints;

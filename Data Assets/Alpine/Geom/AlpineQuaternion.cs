@@ -182,5 +182,15 @@ namespace Alpine.Geom
         {
             return "< X: " + x + ", Y: " + y + ", Z: " + z + " : W: " + w + " >";
         }
+
+        public string XYZToString()
+        {
+            return string.Join(" ", x, y, z);
+        }
+
+        public string XYZWToString()
+        {
+            return string.Join(" ", x, y, z, w);
+        }
     }
 }

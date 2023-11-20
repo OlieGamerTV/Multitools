@@ -33,11 +33,15 @@ namespace Multi_Tool.Result_Windows
     {
         ModelData mesh;
         static readonly XNamespace xnl = "http://www.collada.org/2005/11/COLLADASchema";
-        public Alpine_Model_List(ModelData data)
+        string exportPath = string.Empty;
+        public Alpine_Model_List(ModelData data = null)
         {
             InitializeComponent();
-            mesh = data;
-            BuildList();
+            if(data != null )
+            {
+                mesh = data;
+                BuildList();
+            }
             this.Show();
         }
 
@@ -131,26 +135,29 @@ namespace Multi_Tool.Result_Windows
             xDocument.Root.Add(WriteDAEImageLibrary());
             xDocument.Root.Add(WriteDAEMaterialLibrary());
             xDocument.Root.Add(WriteDAEGeoLibrary());
+            if (mesh.hasSkeletonData)
+            {
+                xDocument.Root.Add(WriteDAEControllerLibrary());
+            }
             xDocument.Root.Add(WriteDAESceneLibrary());
             XElement scene = new XElement("scene");
             XElement instVisScenes = new XElement("instance_visual_scene", new XAttribute("url", "#Scene"));
             scene.Add(instVisScenes);
             xDocument.Root.Add(scene);
             Mouse.OverrideCursor = null;
-            string export = SaveDialog();
-            xDocument.Save(export);
-            Debug.WriteLine("Exported to " + export);
+            xDocument.Save(exportPath);
+            Debug.WriteLine("Exported to " + exportPath);
             foreach (var texture in mesh.textures)
             {
-                BinaryWriter writer = new BinaryWriter(File.Create(export.Remove(export.LastIndexOf('\\') + 1) + "\\" + texture.Name + texture.Extension));
+                BinaryWriter writer = new BinaryWriter(File.Create(exportPath.Remove(exportPath.LastIndexOf('\\') + 1) + "\\" + texture.Name + texture.Extension));
                 writer.Write(texture.RawData.data.ToArray());
                 writer.Flush();
                 writer.Close();
-                Debug.WriteLine(texture.Name + texture.Extension + " Exported to " + export.Remove(export.LastIndexOf('\\') + 1));
+                Debug.WriteLine(texture.Name + texture.Extension + " Exported to " + exportPath.Remove(exportPath.LastIndexOf('\\') + 1));
             }
         }
 
-        #region Library Writing
+        #region DAE Library Writing
         private XElement WriteDAEAsset()
         {
             XElement asset = new XElement(xnl + "asset");
@@ -199,28 +206,35 @@ namespace Multi_Tool.Result_Windows
             XElement visScene = new XElement(xnl + "visual_scene", 
                 new XAttribute("id", "Scene"), 
                 new XAttribute("name", "Scene"));
-            foreach (var meshes in mesh.meshes)
+            if (mesh.hasSkeletonData)
             {
-                XElement node = new XElement(xnl + "node", 
-                    new XAttribute("id", meshes.name + "-Node"), 
-                    new XAttribute("name", meshes.name), 
-                    new XAttribute("type", "NODE"));
-                XElement transformMat = new XElement(xnl + "matrix", 
-                    new XAttribute("sid", "transform"));
-                transformMat.Add(matrix);
-                XElement instGeo = new XElement(xnl + "instance_geometry", 
-                    new XAttribute("url", "#" + meshes.name + "-Mesh"), 
-                    new XAttribute("name", meshes.name));
-                XElement bindMat = new XElement(xnl + "bind_material");
-                XElement techCommon = new XElement(xnl + "technique_common");
-                XElement instMat = new XElement(xnl + "instance_material", new XAttribute("symbol", meshes.name + "-Mat"), new XAttribute("target", "#" + meshes.material.Id));
-                XElement binder = new XElement(xnl + "bind_vertex_input", new XAttribute("semantic", "Color-Unused-uv-0"), new XAttribute("input_semantic", "TEXCOORD"), new XAttribute("input_set", "0"));
-                instMat.Add(binder);
-                techCommon.Add(instMat);
-                bindMat.Add(techCommon);
-                instGeo.Add(bindMat);
-                node.Add(transformMat, instGeo);
-                visScene.Add(node);
+                visScene.Add(WriteSceneSkeleton());
+            }
+            else
+            {
+                foreach (var meshes in mesh.meshes)
+                {
+                    XElement node = new XElement(xnl + "node",
+                        new XAttribute("id", meshes.name + "-Node"),
+                        new XAttribute("name", meshes.name),
+                        new XAttribute("type", "NODE"));
+                    XElement transformMat = new XElement(xnl + "matrix",
+                        new XAttribute("sid", "transform"));
+                    transformMat.Add(matrix);
+                    XElement instGeo = new XElement(xnl + "instance_geometry",
+                        new XAttribute("url", "#" + meshes.name + "-Mesh"),
+                        new XAttribute("name", meshes.name));
+                    XElement bindMat = new XElement(xnl + "bind_material");
+                    XElement techCommon = new XElement(xnl + "technique_common");
+                    XElement instMat = new XElement(xnl + "instance_material", new XAttribute("symbol", meshes.name + "-Mat"), new XAttribute("target", "#" + meshes.material.Id));
+                    XElement binder = new XElement(xnl + "bind_vertex_input", new XAttribute("semantic", "Color-Unused-uv-0"), new XAttribute("input_semantic", "TEXCOORD"), new XAttribute("input_set", "0"));
+                    instMat.Add(binder);
+                    techCommon.Add(instMat);
+                    bindMat.Add(techCommon);
+                    instGeo.Add(bindMat);
+                    node.Add(transformMat, instGeo);
+                    visScene.Add(node);
+                }
             }
             libraryScenes.Add(visScene);
             return libraryScenes;
@@ -231,7 +245,8 @@ namespace Multi_Tool.Result_Windows
             XElement libTexture = new XElement(xnl + "library_images");
             foreach (var texture in mesh.textures)
             {
-                XElement image = new XElement(xnl + "image", 
+                XElement image = new XElement(xnl + "image",
+                    new XAttribute("id", texture.Name),
                     new XAttribute("name", texture.Name));
                 XElement init = new XElement(xnl + "init_from");
                 XText path = new XText(texture.Name + texture.Extension);
@@ -263,7 +278,7 @@ namespace Multi_Tool.Result_Windows
             {
                 XElement effect = new XElement(xnl + "effect", new XAttribute("id", "defaultEffect" + meshes.Id));
                 XElement profile = new XElement(xnl + "profile_COMMON");
-                XElement technique = new XElement(xnl + "technique", new XAttribute("sid", "effect" + meshes.Id));
+                XElement technique = new XElement(xnl + "technique", new XAttribute("sid", "common"));
                 XElement phong = new XElement(xnl + "lambert");
                 if (meshes.HasConstantInput(ConstantInputName.AMBIENT))
                 {
@@ -313,9 +328,102 @@ namespace Multi_Tool.Result_Windows
             }
             return libEffects;
         }
+
+        private XElement WriteDAEControllerLibrary()
+        {
+            XElement libController = new XElement(xnl + "library_controllers");
+            if (mesh.skeleton != null)
+            {
+                foreach (var meshes in mesh.meshes)
+                {
+                    XElement control = new XElement("controller", new XAttribute("id", meshes.name + "-skin"));
+                    XElement skin = new XElement("skin", new XAttribute("source", "#" + meshes.name + "-Mesh"));
+
+                    // Joint Names
+                    XElement srcJoints = new XElement("source", new XAttribute("id", meshes.name + "-Joints"));
+                    XElement jointsNameArr = new XElement("Name_array", new XAttribute("id", meshes.name + "-Joints-array"), new XAttribute("count", meshes.joints.Count));
+                    foreach (var joint in meshes.joints)
+                    {
+                        jointsNameArr.Add(mesh.skeleton[joint].name + " ");
+                    }
+                    srcJoints.Add(jointsNameArr);
+                    XElement techCommon = new XElement("technique_common");
+                    XElement accessor = new XElement("accessor", 
+                        new XAttribute("source", "#" + meshes.name + "-Joints-array"), 
+                        new XAttribute("count", meshes.joints.Count), 
+                        new XAttribute("stride", 1));
+                    XElement param = new XElement("param", 
+                        new XAttribute("name", "JOINT"), 
+                        new XAttribute("type", "name"));
+                    accessor.Add(param);
+                    techCommon.Add(accessor);
+                    srcJoints.Add(techCommon);
+                    skin.Add(srcJoints);
+
+                    // Weights
+                    XElement srcWeights = new XElement("source", new XAttribute("id", meshes.name + "-Weights"));
+                    List<float> weights = FileUtils.ReadNumberVectorToList(meshes.vertexData.weights, 0);
+                    XElement floatArr = new XElement("float_array", new XAttribute("id", meshes.name + "-Weights-array"), new XAttribute("count", weights.Count));
+                    floatArr.Add(string.Join(" ", weights));
+                    srcWeights.Add(floatArr);
+                    techCommon = new XElement("technique_common");
+                    accessor = new XElement("accessor",
+                        new XAttribute("source", "#" + meshes.name + "-Weights-array"),
+                        new XAttribute("count", weights.Count),
+                        new XAttribute("stride", 1));
+                    param = new XElement("param",
+                        new XAttribute("name", "WEIGHT"),
+                        new XAttribute("type", "float"));
+                    accessor.Add(param);
+                    techCommon.Add(accessor);
+                    srcWeights.Add(techCommon);
+                    skin.Add(srcWeights);
+
+                    // Inv Binds
+                    XElement srcBinds = new XElement("source", new XAttribute("id", meshes.name + "-Inv_Bind_Mats"));
+                    List<float> bindMats = FileUtils.ReadNumberVectorToList(meshes.vertexData.joints, 0);
+                    XElement floatBindArr = new XElement("float_array", new XAttribute("id", meshes.name + "-Inv_Bind_Mats-array"), new XAttribute("count", bindMats.Count));
+                    floatBindArr.Add(string.Join(" ", bindMats));
+                    srcBinds.Add(floatBindArr);
+                    techCommon = new XElement("technique_common");
+                    accessor = new XElement("accessor",
+                        new XAttribute("source", "#" + meshes.name + "-Inv_Bind_Mats-array"),
+                        new XAttribute("count", weights.Count / 12),
+                        new XAttribute("stride", 12));
+                    param = new XElement("param",
+                        new XAttribute("name", "TRANSFORM"),
+                        new XAttribute("type", "float4x3"));
+                    accessor.Add(param);
+                    techCommon.Add(accessor);
+                    srcBinds.Add(techCommon);
+                    skin.Add(srcBinds);
+
+                    // Joints
+                    XElement joints = new XElement("joints");
+                    XElement inputJoints = new XElement("input", 
+                        new XAttribute("semantic", "JOINT"), 
+                        new XAttribute("source", "#" + meshes.name + "-Joints"));
+                    XElement inputBinds = new XElement("input",
+                        new XAttribute("semantic", "INV_BIND_MATRIX"),
+                        new XAttribute("source", "#" + meshes.name + "-Inv_Bind_Mats"));
+                    joints.Add(inputJoints, inputBinds);
+                    skin.Add(joints);
+
+                    // Vertex Weights
+                    XElement vertWeight = new XElement("vertex_weights", new XAttribute("count", "0"));
+                    XElement inputJoint = new XElement("input", new XAttribute("semantic", "JOINT"), new XAttribute("offset", "0"), new XAttribute("source", "#" + meshes.name + "-Joints"));
+                    XElement inputWeights = new XElement("input", new XAttribute("semantic", "WEIGHT"), new XAttribute("offset", "1"), new XAttribute("source", "#" + meshes.name + "-Weights"));
+                    vertWeight.Add(inputJoint, inputWeights);
+                    skin.Add(vertWeight);
+                    control.Add(skin);
+                    libController.Add(control);
+                }
+            }
+            return libController;
+        }
         #endregion
 
-        #region Library Geometry Writing
+        #region DAE Library Geometry Writing
         private XElement WriteDaeGeoPos(MeshData meshData)
         {
             Debug.Write("Reading Geo Positions...");
@@ -405,6 +513,10 @@ namespace Multi_Tool.Result_Windows
             XElement sourceUV = new XElement(xnl + "source", new XAttribute("id", "Color-Unused-uv-0"));
             meshData.vertexData.texCoords["Color-Unused-uv-0"].data.Position = 0;
             List<float> uvCoords = FileUtils.ReadNumberVectorToList(meshData.vertexData.texCoords["Color-Unused-uv-0"].data, 0, 2);
+            for (int i = 1; i < uvCoords.Count; i += 2)
+            {
+                uvCoords[i] = -uvCoords[i] + 1;
+            }
             XElement posArray = new XElement(xnl + "float_array",
                 new XAttribute("id", "Color-Unused-uv-0" + "-Mesh-Map_Array"),
                 new XAttribute("count", uvCoords.Count));
@@ -440,31 +552,258 @@ namespace Multi_Tool.Result_Windows
         {
             Debug.Write("Reading Mesh [" + meshData.name + "] indices...");
             List<short> indicesList = ReadIndicesToList(meshData.indices, meshData.indicesAmount);
-            XElement tris = new XElement(xnl + "triangles", 
-                new XAttribute("count", indicesList.Count));
+            XElement tris = new XElement(xnl + "polylist", 
+                new XAttribute("count", indicesList.Count / 3));
             XElement inputVertex = new XElement(xnl + "input", 
                 new XAttribute("semantic", "VERTEX"), 
                 new XAttribute("source", "#" + meshData.name + "-" + meshData.id + "-Verts"), 
-                new XAttribute("offset", meshData.id));
+                new XAttribute("offset", 0));
             XElement inputNormal = new XElement(xnl + "input",
                 new XAttribute("semantic", "NORMAL"),
                 new XAttribute("source", "#" + meshData.name + "-" + meshData.id + "-Normals"),
-                new XAttribute("offset", meshData.id));
-            XElement triIndices = new XElement(xnl + "p", string.Join(' ', indicesList));
+                new XAttribute("offset", 0));
             if (meshData.vertexData.texCoords.ContainsKey("Color-Unused-uv-0"))
             {
                 XElement inputTexCoord = new XElement(xnl + "input",
                 new XAttribute("semantic", "TEXCOORD"),
                 new XAttribute("source", "#Color-Unused-uv-0"),
-                new XAttribute("offset", meshData.id),
-                new XAttribute("set", meshData.vertexData.texCoords["Color-Unused-uv-0"].id));
-                tris.Add(inputVertex, inputNormal, inputTexCoord, triIndices);
+                new XAttribute("offset", 0),
+                new XAttribute("set", 0));
+                tris.Add(inputVertex, inputNormal, inputTexCoord);
             }
             else
             {
-                tris.Add(inputVertex, inputNormal, triIndices);
+                tris.Add(inputVertex, inputNormal);
             }
+            XElement vCount = new XElement("vcount");
+            for (int i = 0; i < indicesList.Count / 3; i++)
+            {
+                vCount.Add(3 + " ");
+            }
+            tris.Add(vCount);
+            XElement triIndices = new XElement(xnl + "p", string.Join("  ", indicesList.ToArray()));
+            tris.Add(triIndices);
             return tris;
+        }
+        #endregion
+
+        private XElement WriteSceneSkeleton()
+        {
+            XElement rootNode = new XElement("node",
+                    new XAttribute("id", "skeleton"),
+                    new XAttribute("name", "Armature Rig"),
+                    new XAttribute("sid", "skeleton"),
+                    new XAttribute("type", "NODE"));
+            XElement translateRoot = new XElement("translate", new XText("0 0 0"));
+            XElement scaleRoot = new XElement("scale", new XText("1 1 1"));
+            rootNode.Add(translateRoot, scaleRoot);
+            Dictionary<int, XElement> joints = new Dictionary<int, XElement>();
+            for (int i = 0; i < mesh.skeleton.Count; i++)
+            {
+                XElement joint = new XElement("node", 
+                    new XAttribute("id", mesh.skeleton[i].name), 
+                    new XAttribute("name", mesh.skeleton[i].name),
+                    new XAttribute("sid", mesh.skeleton[i].name),
+                    new XAttribute("type", "JOINT"));
+                XElement translate = new XElement("translate", new XText(mesh.skeleton[i].transform.translation.XYZToString()));
+                XElement scale = new XElement("scale", new XText(string.Join(" ", mesh.skeleton[i].transform.scale, mesh.skeleton[i].transform.scale, mesh.skeleton[i].transform.scale)));
+                joint.Add(translate, scale);
+                joints.Add(mesh.skeleton[i].id, joint);
+            }
+            for (int i = joints.Count - 1; i >= 0; i--)
+            {
+                if (joints.ContainsKey((int)mesh.skeleton[i].parentId))
+                {
+                    joints[(int)mesh.skeleton[i].parentId].Add(joints[i]);
+                    joints.Remove(i);
+                }
+            }
+            for (int i = 0; i < joints.Count; i++)
+            {
+                rootNode.Add(joints[i]);
+            }
+            rootNode.Add(WriteSceneSkinnedMesh());
+            return rootNode;
+        }
+
+        private XElement[] WriteSceneSkinnedMesh()
+        {
+            List<XElement> nodes = new List<XElement>();
+            for (int i = 0; i < mesh.meshes.Count; i++)
+            {
+                XElement node = new XElement(xnl + "node", new XAttribute("id", mesh.meshes[i].name), new XAttribute("type", "NODE"));
+                XElement instController = new XElement(xnl + "instance_controller", new XAttribute("url", "#" + mesh.meshes[i].name + "-skin"));
+                for (int joint = 0; joint < mesh.meshes[i].joints.Count; joint++)
+                {
+                    XElement skeleton = new XElement(xnl + "skeleton", new XText("#" + mesh.skeleton[mesh.meshes[i].joints[joint]].name));
+                    instController.Add(skeleton);
+                }
+                XElement bindMat = new XElement(xnl + "bind_material");
+                XElement techCommon = new XElement(xnl + "technique_common");
+                XElement instMat = new XElement(xnl + "instance_material", new XAttribute("symbol", mesh.meshes[i].name + "-Mat"), new XAttribute("target", "#" + mesh.meshes[i].material.Id));
+                XElement binder = new XElement(xnl + "bind_vertex_input", new XAttribute("semantic", "Color-Unused-uv-0"), new XAttribute("input_semantic", "TEXCOORD"), new XAttribute("input_set", "0"));
+                instMat.Add(binder);
+                techCommon.Add(instMat);
+                bindMat.Add(techCommon);
+                instController.Add(bindMat);
+                node.Add(instController);
+                nodes.Add(node);
+            }
+            return nodes.ToArray();
+        }
+
+        public void WriteToOBJ()
+        {
+            StreamWriter writer = new StreamWriter(File.Create(exportPath));
+            
+            List<float> positions = new List<float>();
+            List<float> normals = new List<float>();
+            List<short> indices = new List<short>();
+            foreach (var meshes in mesh.meshes)
+            {
+                writer.Write(meshes.name + "\n");
+                meshes.vertexData.vertices.Position = 0;
+                positions = FileUtils.ReadNumberVectorToList(meshes.vertexData.vertices, 0);
+                WriteOBJPositions(writer, positions);
+                meshes.vertexData.normals.Position = 0;
+                normals = FileUtils.ReadNumberVectorToList(meshes.vertexData.normals, 0);
+                WriteOBJNormals(writer, normals);
+                if (meshes.vertexData.texCoords.ContainsKey("Color-Unused-uv-0"))
+                {
+                    meshes.vertexData.texCoords["Color-Unused-uv-0"].data.Position = 0;
+                    List<float> texCoord = FileUtils.ReadNumberVectorToList(meshes.vertexData.texCoords["Color-Unused-uv-0"].data, 0, 2);
+                    WriteOBJTexCoords(writer, texCoord);
+                }
+            }
+            foreach(var meshes in mesh.meshes)
+            {
+                writer.Write("# g " + meshes.name + "\n");
+                indices = ReadIndicesToList(meshes.indices, meshes.indicesAmount);
+                WriteOBJIndices(writer, indices);
+            }
+            writer.Flush();
+            writer.Close();
+        }
+
+        #region OBJ Data Writing
+        public void WriteOBJPositions(StreamWriter writer, List<float> positionsList)
+        {
+            int count = 0;
+            int amountRead = 0;
+            writer.Write("v ");
+            foreach (float position in positionsList)
+            {
+                count++;
+                amountRead++;
+                if (count != 3)
+                {
+                    writer.Write(position + " ");
+                }
+                if (count >= 3)
+                {
+                    writer.Write(position);
+                }
+                if (count >= 3 && amountRead != positionsList.Count)
+                {
+                    writer.Write("\nv ");
+                    count = 0;
+                }
+                else if (count >= 3 && amountRead >= positionsList.Count)
+                {
+                    writer.Write("\n");
+                    count = 0;
+                }
+            }
+        }
+
+        public void WriteOBJNormals(StreamWriter writer, List<float> normalsList)
+        {
+            int count = 0;
+            int amountRead = 0;
+            writer.Write("vn ");
+            foreach (float normal in normalsList)
+            {
+                count++;
+                amountRead++;
+                if (count != 3)
+                {
+                    writer.Write(normal + " ");
+                }
+                if (count >= 3)
+                {
+                    writer.Write(normal);
+                }
+                if (count >= 3 && amountRead != normalsList.Count)
+                {
+                    writer.Write("\nvn ");
+                    count = 0;
+                }
+                else if (count >= 3 && amountRead >= normalsList.Count)
+                {
+                    writer.Write("\n");
+                    count = 0;
+                }
+            }
+        }
+
+        public void WriteOBJTexCoords(StreamWriter writer, List<float> texCoordsList)
+        {
+            int count = 0;
+            int amountRead = 0;
+            writer.Write("vt ");
+            foreach (float coord in texCoordsList)
+            {
+                count++;
+                amountRead++;
+                if (count != 2)
+                {
+                    writer.Write(coord + " ");
+                }
+                if (count >= 2)
+                {
+                    writer.Write(coord);
+                }
+                if (count >= 2 && amountRead != texCoordsList.Count)
+                {
+                    writer.Write("\nvt ");
+                    count = 0;
+                }
+                else if (count >= 2 && amountRead >= texCoordsList.Count)
+                {
+                    writer.Write("\n");
+                    count = 0;
+                }
+            }
+        }
+
+        public void WriteOBJIndices(StreamWriter writer, List<short> indicesList)
+        {
+            int count = 0;
+            int amountRead = 0;
+            writer.Write("f ");
+            foreach (short coord in indicesList)
+            {
+                count++;
+                amountRead++;
+                if (count != 3)
+                {
+                    writer.Write(coord + "// ");
+                }
+                if (count >= 3)
+                {
+                    writer.Write(coord + "//");
+                }
+                if (count >= 3 && amountRead != indicesList.Count)
+                {
+                    writer.Write("\nf ");
+                    count = 0;
+                }
+                else if (count >= 3 && amountRead >= indicesList.Count)
+                {
+                    writer.Write("\n");
+                    count = 0;
+                }
+            }
         }
         #endregion
 
@@ -497,26 +836,39 @@ namespace Multi_Tool.Result_Windows
             }
         }
 
-        private string SaveDialog()
+        private void SaveDialog()
         {
             SaveFileDialog fileDialog = new SaveFileDialog();
             fileDialog.Title = "Save Model Data";
             fileDialog.CheckPathExists = true;
-            fileDialog.Filter = "Collada DAE (*.dae)|*.dae";
+            fileDialog.Filter = "Collada DAE (*.dae)|*.dae|Wavefront OBJ [W.I.P] (*.obj)|*.obj";
             fileDialog.ValidateNames = true;
             if (fileDialog.ShowDialog() == true)
             {
-                return fileDialog.FileName;
+                exportPath = fileDialog.FileName;
+                return;
             }
             else
             {
-                return "";
+                exportPath = "";
+                return;
             }
         }
 
         private void ExportDae_Click(object sender, RoutedEventArgs e)
         {
-            WriteToDAE();
+            SaveDialog();
+            switch (System.IO.Path.GetExtension(exportPath))
+            {
+                case ".obj":
+                    WriteToOBJ();
+                    return;
+                case ".dae":
+                    WriteToDAE();
+                    return;
+                default:
+                    return;
+            }
         }
     }
 }

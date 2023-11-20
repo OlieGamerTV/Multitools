@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Multi_Tool.Tools.Unity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,6 +25,7 @@ namespace Multi_Tool
         {
             InitializeComponent();
             Disney_Canvas.Visibility = Visibility.Collapsed;
+            Unity_Canvas.Visibility = Visibility.Collapsed;
         }
 
         private void Disney_Algo_Button_Click(object sender, RoutedEventArgs e)
@@ -36,7 +38,14 @@ namespace Multi_Tool
         private void Go_Back_Button_Click(object sender, RoutedEventArgs e)
         {
             Main_Canvas.Visibility = Visibility.Visible;
-            Disney_Canvas.Visibility = Visibility.Collapsed;
+            if (Disney_Canvas.Visibility == Visibility.Visible)
+            {
+                Disney_Canvas.Visibility = Visibility.Collapsed;
+            }
+            if (Unity_Canvas.Visibility == Visibility.Visible)
+            {
+                Unity_Canvas.Visibility = Visibility.Collapsed;
+            }
             this.Title = "Multitools - Main Menu";
         }
 
@@ -45,8 +54,6 @@ namespace Multi_Tool
             Window newWindow = new File_Decompiler();
             newWindow.Owner = this;
             newWindow.Show();
-            newWindow.Owner = null;
-            Close();
         }
 
         private void DPack_Button_Click(object sender, RoutedEventArgs e)
@@ -54,8 +61,6 @@ namespace Multi_Tool
             Window newWindow = new DPack_Compression();
             newWindow.Owner = this;
             newWindow.Show();
-            newWindow.Owner = null;
-            Close();
         }
 
         private void BKV_Button_Click(object sender, RoutedEventArgs e)
@@ -63,8 +68,6 @@ namespace Multi_Tool
             Window newWindow = new BKV_Reader();
             newWindow.Owner = this;
             newWindow.Show();
-            newWindow.Owner = null;
-            Close();
         }
 
         private void Common_Algo_Button_Click(object sender, RoutedEventArgs e)
@@ -72,8 +75,6 @@ namespace Multi_Tool
             Window newWindow = new Common_File_Comp();
             newWindow.Owner = this;
             newWindow.Show();
-            newWindow.Owner = null;
-            Close();
         }
 
         private void PVR_Convert_Button_Click(object sender, RoutedEventArgs e)
@@ -81,8 +82,6 @@ namespace Multi_Tool
             Window newWindow = new PVR_Converter();
             newWindow.Owner = this;
             newWindow.Show();
-            newWindow.Owner = null;
-            Close();
         }
 
         private void Model_Button_Click(object sender, RoutedEventArgs e)
@@ -90,8 +89,27 @@ namespace Multi_Tool
             Model_Builder newWindow = new Model_Builder();
             newWindow.Owner = this;
             newWindow.Show();
-            newWindow.Owner = null;
-            Close();
+        }
+
+        private void Unity_Button_Click(object sender, RoutedEventArgs e)
+        {
+            Main_Canvas.Visibility = Visibility.Collapsed;
+            Unity_Canvas.Visibility = Visibility.Visible;
+            this.Title = "Multitools - Unity Tools Menu";
+        }
+
+        private void Atlas_Converter_Button_Click(object sender, RoutedEventArgs e)
+        {
+            NGUI_Atlas_Separator nGUIWindow = new NGUI_Atlas_Separator();
+            nGUIWindow.Owner = this;
+            nGUIWindow.Show();
+        }
+
+        private void Genesis3D_Button_Click(object sender, RoutedEventArgs e)
+        {
+            Genesis3D gen3DWindow = new Genesis3D();
+            gen3DWindow.Owner = this;
+            gen3DWindow.Show();
         }
     }
 }

@@ -5,19 +5,26 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Multi_Tool"
         mc:Ignorable="d"
-        Title="Multitools - Main Menu" Height="450" Width="800" WindowStartupLocation="CenterOwner">
+        Title="Multitools - Main Menu" Height="450" Width="800" WindowStartupLocation="CenterOwner" MinHeight="450" MinWidth="800">
     <Grid x:Name="Main_Page">
-        <Canvas x:Name="Main_Canvas" d:IsHidden="True">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="427*"/>
+            <ColumnDefinition Width="181*"/>
+            <ColumnDefinition Width="192*"/>
+        </Grid.ColumnDefinitions>
+        <Canvas x:Name="Main_Canvas" Grid.ColumnSpan="3">
             <Label x:Name="Main_Title" Content="Multi-Tools Utility" FontSize="24" FontWeight="Bold" Canvas.Left="292.581" Canvas.Top="25.998" HorizontalAlignment="Left" VerticalAlignment="Center"/>
             <Label x:Name="Main_Desc" Content="Main Area" FontSize="16" Canvas.Left="356.308" Canvas.Top="67.921" Height="30" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center"/>
             <Label x:Name="File_Desc" Content="File Rippers / Converters" FontSize="16" Canvas.Left="308.821" Canvas.Top="102.921" HorizontalAlignment="Left" VerticalAlignment="Center"/>
             <Button x:Name="Embed_Button" Content="Embedded File Ripper" Canvas.Left="300" Canvas.Top="139.201" FontSize="16" Height="30" Width="200" Click="Embed_Button_Click" ClickMode="Press" HorizontalAlignment="Left" VerticalAlignment="Center"/>
             <Button x:Name="PVR_Convert_Button" Content="PVR Version Converter" Canvas.Left="300" Canvas.Top="174.201" FontSize="16" Height="30" Width="200" HorizontalAlignment="Left" VerticalAlignment="Center" Click="PVR_Convert_Button_Click" Cursor="Hand"/>
-            <Label x:Name="Compress_Desc" Content="Compression / Decompressor Tools" FontSize="16" Canvas.Left="270.063" Canvas.Top="232.02" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-            <Button x:Name="Common_Algo_Button" Content="Common Algorithms" Canvas.Left="300" Canvas.Top="263.3" FontSize="16" Height="30" Width="200" HorizontalAlignment="Left" VerticalAlignment="Center" Click="Common_Algo_Button_Click" ClickMode="Press"/>
-            <Button x:Name="Disney_Algo_Button" Content="Disney Alpine Algorithms" Canvas.Left="300" Canvas.Top="298.3" FontSize="16" Height="30" Width="200" Click="Disney_Algo_Button_Click" ClickMode="Press" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            <Label x:Name="Compress_Desc" Content="Other Tools" FontSize="16" Canvas.Left="354.457" Canvas.Top="232.02" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            <Button x:Name="Common_Algo_Button" Content="Common Compressions" Canvas.Left="300" Canvas.Top="263.3" FontSize="16" Height="30" Width="200" HorizontalAlignment="Left" VerticalAlignment="Center" Click="Common_Algo_Button_Click" ClickMode="Press"/>
+            <Button x:Name="Disney_Algo_Button" Content="Disney Alpine Tools" Canvas.Left="300" Canvas.Top="298.3" FontSize="16" Height="30" Width="200" Click="Disney_Algo_Button_Click" ClickMode="Press" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            <Button x:Name="Unity_Button" Content="Unity Tools" Canvas.Left="300" Canvas.Top="333.3" FontSize="16" Height="30" Width="200" Click="Unity_Button_Click"  ClickMode="Press" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+            <Button x:Name="Genesis3D_Button" Content="Genesis3D Tools" Canvas.Left="300" Canvas.Top="368.3" FontSize="16" Height="30" Width="200" Click="Genesis3D_Button_Click"  ClickMode="Press" HorizontalAlignment="Center" VerticalAlignment="Top" IsEnabled="False"/>
         </Canvas>
-        <Canvas x:Name="Disney_Canvas">
+        <Canvas x:Name="Disney_Canvas" d:IsHidden="True" Grid.ColumnSpan="3">
             <Label x:Name="Disney_Title" Content="Multi-Tools Utility" FontSize="24" FontWeight="Bold" Canvas.Left="292.581" Canvas.Top="25.998" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             <Label x:Name="Main_Desc_Copy" Content="'Adobe' Alpine Area" FontSize="16" Canvas.Left="316.546" Canvas.Top="67.921" Height="30" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             <Label x:Name="File_Desc_Copy" Content="Compressor / Decompressor Tools" FontSize="16" Canvas.Left="273.745" Canvas.Top="102.921" HorizontalAlignment="Left" VerticalAlignment="Center"/>
@@ -26,6 +33,13 @@
             <Button x:Name="button" Content="Go Back" Canvas.Left="708.5" Canvas.Top="10" FontSize="16" Width="65" Height="30" Click="Go_Back_Button_Click" ClickMode="Press" HorizontalAlignment="Left" VerticalAlignment="Center"/>
             <Label x:Name="File_Desc_Copy1" Content="Other Tools" FontSize="16" Canvas.Left="354.458" Canvas.Top="248.921" HorizontalAlignment="Left" VerticalAlignment="Center" HorizontalContentAlignment="Center"/>
             <Button x:Name="Model_Button" Content="Model Builder" Canvas.Left="300" Canvas.Top="285.201" FontSize="16" Height="30" Width="200" Click="Model_Button_Click" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+        </Canvas>
+        <Canvas x:Name="Unity_Canvas" d:IsHidden="True" Grid.ColumnSpan="3">
+            <Label x:Name="Disney_Title1" Content="Multi-Tools Utility" FontSize="24" FontWeight="Bold" Canvas.Left="292.581" Canvas.Top="25.998" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <Label x:Name="Main_Desc_Copy1" Content="Unity Tools Area" FontSize="16" Canvas.Left="333.317" Canvas.Top="67.921" Height="30" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            <Label x:Name="File_Desc_Copy2" Content="NGUI Tools" FontSize="16" Canvas.Left="355.595" Canvas.Top="102.921" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            <Button x:Name="Unity_GoBack" Content="Go Back" Canvas.Left="708.5" Canvas.Top="10" FontSize="16" Width="65" Height="30" Click="Go_Back_Button_Click" ClickMode="Press" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            <Button x:Name="Atlas_Converter_Button" Content="Atlas Material Separator" Canvas.Left="300" Canvas.Top="139.201" FontSize="16" Height="30" Width="200" Click="Atlas_Converter_Button_Click"  HorizontalAlignment="Center" VerticalAlignment="Top"/>
         </Canvas>
     </Grid>
 </Window>

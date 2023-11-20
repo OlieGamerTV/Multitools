@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Alpine.Renderables.Models.Animation.Data
 {
-    internal class JointAnimationData
+    public class JointAnimationData
     {
         public string joint;
         public List<AlpineTransform> frames;

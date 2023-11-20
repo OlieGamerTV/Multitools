@@ -146,6 +146,7 @@ namespace Alpine.Renderables.Models.Skeleton.Data
             AddMesh(loc9);
         }
 
+        [MTAThread]
         public bool Load(string name, ByteArray mainFile, ByteArray textureFile)
         {
             outputter.WriteToOutput("ModelData.load: Loading data...");
@@ -186,6 +187,7 @@ namespace Alpine.Renderables.Models.Skeleton.Data
             return false;
         }
 
+        [MTAThread]
         private bool LoadBKV(Dictionary<string, ByteArray> param1)
         {
             BKVTable loc6 = null, loc9 = null, loc10 = null;

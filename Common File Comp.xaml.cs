@@ -15,6 +15,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Multi_Tool.Enumerators;
 using Multi_Tool.Tools;
 
 namespace Multi_Tool
@@ -27,7 +28,6 @@ namespace Multi_Tool
         CompressionTool fileRipper = null;
         string currentFileIndex = "AUTOMATIC";
         int currentFileCompression = 6;
-        List<string> fileIndexes = new List<string>() { "AUTOMATIC", "ZLIB", "DEFLATE", "GZIP", "LZMA", "SERF" };
 
         public Common_File_Comp()
         {
@@ -36,7 +36,7 @@ namespace Multi_Tool
             {
                 fileRipper = new CompressionTool(Output_List);
             }
-            currentFileIndex = "AUTOMATIC";
+            currentFileIndex = AlgorithmEnums.AUTOMATIC;
         }
 
         private void Go_Back_Button_Click(object sender, RoutedEventArgs e)
@@ -55,12 +55,12 @@ namespace Multi_Tool
 
         private void fileFormatCombo_MouseLeave(object sender, MouseEventArgs e)
         {
-            if (fileIndexes[compressionCombo.SelectedIndex] == currentFileIndex)
+            if (AlgorithmEnums.fileIndexes[compressionCombo.SelectedIndex] == currentFileIndex)
             {
             }
             else
             {
-                currentFileIndex = fileIndexes[compressionCombo.SelectedIndex];
+                currentFileIndex = AlgorithmEnums.fileIndexes[compressionCombo.SelectedIndex];
                 fileRipper.SetAlgorithm(currentFileIndex);
             }
         }

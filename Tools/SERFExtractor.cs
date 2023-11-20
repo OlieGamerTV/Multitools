@@ -107,6 +107,10 @@ namespace Multi_Tool.Tools
                 {
                     desiredFileType = "wav";
                 }
+                else if (temp.Contains(SERFInputNames.MAGIC_XWMA))
+                {
+                    desiredFileType = "xwma";
+                }
                 else if (temp.Contains(SERFInputNames.MAGIC_AVI))
                 {
                     desiredFileType = "avi";
