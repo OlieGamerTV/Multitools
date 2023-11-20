@@ -96,10 +96,12 @@ namespace Multi_Tool.Result_Windows
         public void WriteToXAF()
         {
             Mouse.OverrideCursor = Cursors.AppStarting;
+            System.Globalization.CultureInfo presentCulture = System.Threading.Thread.CurrentThread.CurrentCulture;
             XDocument xDocument = new XDocument(
                 new XElement("MaxAnimation", 
                 new XAttribute("version", "1.0.0"), new XAttribute("date", DateTime.UtcNow.ToString())));
             XElement customData = new XElement("CustomData");
+            System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US", false);
             xDocument.Root.Add(WriteSceneInfo(), customData);
             if (animationData.HasSkeletalAnimation)
             {
@@ -118,7 +120,10 @@ namespace Multi_Tool.Result_Windows
             {
                 xDocument.Save(xw);
             }
+#if !RELEASE
             Debug.WriteLine("Exported to " + exportPath);
+#endif
+            System.Threading.Thread.CurrentThread.CurrentCulture = presentCulture;
         }
 
         private XElement WriteSceneInfo()

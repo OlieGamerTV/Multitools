@@ -24,14 +24,18 @@ namespace Multi_Tool.Utilities
             {
                 if (!(entry is ListViewItem))
                 {
+#if !RELEASE
                     Debug.WriteLine("Writing to Output Log - " + entry);
+#endif
                     ListViewItem item = new ListViewItem();
                     item.Content = entry;
                     outputList.Items.Add(item);
                 }
                 else
                 {
+#if !RELEASE
                     Debug.WriteLine("Writing to Output Log - " + (entry as ListViewItem).Content.ToString());
+#endif
                     outputList.Items.Add(entry);
                 }
             }
@@ -46,14 +50,18 @@ namespace Multi_Tool.Utilities
                 {
                     if (!(param is ListViewItem))
                     {
+#if !RELEASE
                         Debug.WriteLine("Writing to Output Log - " + param);
+#endif
                         ListViewItem item = new ListViewItem();
                         item.Content = param;
                         outputList.Items.Add(item);
                     }
                     else
                     {
+#if !RELEASE
                         Debug.WriteLine("Writing to Output Log - " + (param as ListViewItem).Content.ToString());
+#endif
                         outputList.Items.Add(param);
                     }
                 }

@@ -598,7 +598,16 @@ namespace Alpine.Renderables.Models.Skeleton.Data
             (loc4 = new BKVReader()).Load(param2[param1 + ".bkv"]);
             PackedTexture loc5 = new PackedTexture(param1, loc4.GetRoot());
             ByteArray loc6;
-            string magic = (loc6 = param2[param1]).ReadUTFBytes(3);
+            if (param2.ContainsKey(param1))
+            {
+                loc6 = param2[param1];
+            }
+            else
+            {
+                loc6 = param2[param1 + ".bkv"];
+            }
+            loc6.Position = 0;
+            string magic = loc6.ReadUTFBytes(3);
             bool loc7 = magic == "ATF";
             Stream imageStream = new MemoryStream();
             imageStream.Write(loc6.data.ToArray());

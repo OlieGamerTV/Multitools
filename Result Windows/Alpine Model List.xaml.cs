@@ -120,6 +120,7 @@ namespace Multi_Tool.Result_Windows
 
         public void WriteToDAE()
         {
+            System.Globalization.CultureInfo presentCulture = System.Threading.Thread.CurrentThread.CurrentCulture;
             Mouse.OverrideCursor = Cursors.AppStarting;
             XDocument xDocument = new XDocument();
             XDeclaration declaration = new XDeclaration("1.0", "utf-8", null);
@@ -131,6 +132,7 @@ namespace Multi_Tool.Result_Windows
             collada.Add(ver);
             xDocument.Add(collada);
             xDocument.Root.Add(WriteDAEAsset());
+            System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US", false);
             xDocument.Root.Add(WriteDAEEffectLibrary());
             xDocument.Root.Add(WriteDAEImageLibrary());
             xDocument.Root.Add(WriteDAEMaterialLibrary());
@@ -146,15 +148,20 @@ namespace Multi_Tool.Result_Windows
             xDocument.Root.Add(scene);
             Mouse.OverrideCursor = null;
             xDocument.Save(exportPath);
+#if !RELEASE
             Debug.WriteLine("Exported to " + exportPath);
+#endif
             foreach (var texture in mesh.textures)
             {
                 BinaryWriter writer = new BinaryWriter(File.Create(exportPath.Remove(exportPath.LastIndexOf('\\') + 1) + "\\" + texture.Name + texture.Extension));
                 writer.Write(texture.RawData.data.ToArray());
                 writer.Flush();
                 writer.Close();
+#if !RELEASE
                 Debug.WriteLine(texture.Name + texture.Extension + " Exported to " + exportPath.Remove(exportPath.LastIndexOf('\\') + 1));
+#endif
             }
+            System.Threading.Thread.CurrentThread.CurrentCulture = presentCulture;
         }
 
         #region DAE Library Writing
