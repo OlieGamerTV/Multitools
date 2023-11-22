@@ -16,7 +16,8 @@ namespace Multi_Tool.Enumerators
             lz,
             lzma,
             huffman,
-            serf
+            serf,
+            keyedxor
         }
 
         public const string AUTOMATIC = "AUTOMATIC";
@@ -27,7 +28,8 @@ namespace Multi_Tool.Enumerators
         public const string LZMA = "LZMA";
         public const string HUFFMAN = "HUFFMAN";
         public const string SERF = "SERF";
-        public static List<string> fileIndexes = new List<string>() { "AUTOMATIC", "ZLIB", "DEFLATE", "GZIP", "LZ", "LZMA", "HUFFMAN", "SERF" };
+        public const string KEYXOR = "XOR W/ Key";
+        public static List<string> fileIndexes = new List<string>() { AUTOMATIC, ZLIB, DEFLATE, GZIP, LZ, LZMA, HUFFMAN, SERF, KEYXOR };
 
 
         public AlgorithmTypes algorithmTypes;

@@ -22,6 +22,7 @@ namespace Multi_Tool.Tools
         private OutputLog output;
         private SERFExtractor serfExtractor;
         private string algorithm;
+        public string xorKeyA, xorKeyB;
 
         public CompressionTool(ListView list) : base()
         {
@@ -60,6 +61,9 @@ namespace Multi_Tool.Tools
                         serfExtractor.PassData(exportPath, fileName, filePath, dataText);
                         serfExtractor.RipSerfFile();
                         break;
+                    case AlgorithmEnums.KEYXOR:
+                        HandleXORData(filePaths, exportPath);
+                        break;
                 }
             }
             else
@@ -74,6 +78,9 @@ namespace Multi_Tool.Tools
                         break;
                     case AlgorithmEnums.SERF:
                         //serf.StartSERFRip();
+                        break;
+                    case AlgorithmEnums.KEYXOR:
+                        HandleXORData(filePaths, exportPath);
                         break;
                 }
             }
@@ -97,6 +104,16 @@ namespace Multi_Tool.Tools
                     DSDecmpProg.Decompress(path, flrOut);
                 }
                 output.WriteToOutput(string.Format("Uncompressed file [{0}] exported to [{1}].", Path.GetFileName(path), flrOut));
+            }
+        }
+
+        private void HandleXORData(string[] filesIn, string flrOut)
+        {
+            foreach (string path in filesIn)
+            {
+                output.WriteToOutput("-----------------------------------------", string.Format("Reading File [{0}]", Path.GetFileName(path)));
+                XOREncrypt.Convert(path, flrOut, xorKeyA, xorKeyB);
+                output.WriteToOutput(string.Format("Converted file [{0}] exported to [{1}].", Path.GetFileName(path), flrOut));
             }
         }
 

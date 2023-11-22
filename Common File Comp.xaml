@@ -29,6 +29,7 @@
             <ComboBoxItem Content="LZMA Compression"/>
             <ComboBoxItem Content="Huffman Compression"/>
             <ComboBoxItem Content="SERF Package"/>
+            <ComboBoxItem Content="XOR W/ Keys"/>
         </ComboBox>
         <ComboBox x:Name="compressionLevel" HorizontalAlignment="Right" Margin="0,281,162,0" VerticalAlignment="Top" Width="180" RenderTransformOrigin="0.5,0.534" SelectedIndex="6" MouseLeave="compressionLevel_MouseLeave"  Cursor="Hand" IsEnabled="False">
             <ComboBoxItem Content="Level 0 / None"/>
@@ -42,5 +43,8 @@
             <ComboBoxItem Content="Level 8"/>
             <ComboBoxItem Content="Level 9 / Best Compression"/>
         </ComboBox>
+        <Label x:Name="label_Copy" Content="Key Fields (XOR)" HorizontalAlignment="Right" Margin="0,308,167,0" VerticalAlignment="Top" FontSize="20.5" FontWeight="Bold" Padding="5,0,5,0"/>
+        <TextBox x:Name="XOR_Key_A" HorizontalAlignment="Left" Margin="398,340,0,0" TextWrapping="Wrap" Text="Key A" VerticalAlignment="Top" Width="300" TextChanged="XOR_Key_A_TextChanged" AutomationProperties.IsOffscreenBehavior="Offscreen" Height="20"/>
+        <TextBox x:Name="XOR_Key_B" HorizontalAlignment="Left" Margin="398,365,0,0" TextWrapping="Wrap" Text="Key B" VerticalAlignment="Top" Width="300" TextChanged="XOR_Key_B_TextChanged" AutomationProperties.IsOffscreenBehavior="Offscreen" Height="20"/>
     </Grid>
 </Window>

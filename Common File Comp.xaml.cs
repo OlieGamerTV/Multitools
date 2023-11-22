@@ -91,5 +91,21 @@ namespace Multi_Tool
                 fileRipper.SetCompLevel(currentFileCompression);
             }
         }
+
+        private void XOR_Key_A_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (fileRipper != null)
+            {
+                fileRipper.xorKeyA = XOR_Key_A.Text;
+            }
+        }
+
+        private void XOR_Key_B_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (fileRipper != null)
+            {
+                fileRipper.xorKeyB = XOR_Key_B.Text;
+            }
+        }
     }
 }

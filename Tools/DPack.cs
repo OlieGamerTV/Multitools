@@ -26,7 +26,7 @@ namespace Multi_Tool.Tools
         private bool makeDataCopy, toDecomp, exportFiles;
         private string[] compressionAlgos;
         private string? filePath, fileName, exportPath;
-        private const uint magic_code = 1146110283, ZLIB_CODE = 40056;
+        private const uint magic_code = 0x4B415044, ZLIB_CODE = 0x789C;
 
         public DPack(ListView outList = null) : base()
         {

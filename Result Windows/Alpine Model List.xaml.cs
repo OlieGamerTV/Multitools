@@ -115,6 +115,37 @@ namespace Multi_Tool.Result_Windows
                 }
                 root.Items.Add(treeTextures);
             }
+            if (mesh.hasSkeletonData)
+            {
+                TreeViewItem treeSkeleton = new TreeViewItem();
+                treeSkeleton.Header = "Skeleton";
+                for(int i = 0; i < mesh.skeleton.Count; i++)
+                {
+                    TreeViewItem treeItem = new TreeViewItem();
+                    treeItem.Header = "[" + mesh.skeleton[i].name + "] ID - " + mesh.skeleton[i].id;
+                    ListViewItem item = new ListViewItem();
+                    item.Content = "Transform - <" + mesh.skeleton[i].transform.ToString() + ">";
+                    treeItem.Items.Add(item);
+                    item = new ListViewItem();
+                    item.Content = "Inverse Transform - <" + mesh.skeleton[i].invTransform.ToString() + ">";
+                    treeItem.Items.Add(item);
+                    item = new ListViewItem();
+                    item.Content = "Is Hardpoint? - " + (mesh.skeleton[i].isHardpoint == true ? "Yes" : "No");
+                    treeItem.Items.Add(item);
+                    item = new ListViewItem();
+                    item.Content = "Joint Parent - NaN";
+                    foreach (JointData joint in mesh.skeleton)
+                    {
+                        if (joint.id == mesh.skeleton[i].parentId)
+                        {
+                            item.Content = "Joint Parent - " + joint.name;
+                        }
+                    }
+                    treeItem.Items.Add(item);
+                    treeSkeleton.Items.Add(treeItem);
+                }
+                root.Items.Add(treeSkeleton);
+            }
             ModelTreeList.Items.Add(root);
         }
 
@@ -348,16 +379,16 @@ namespace Multi_Tool.Result_Windows
 
                     // Joint Names
                     XElement srcJoints = new XElement("source", new XAttribute("id", meshes.name + "-Joints"));
-                    XElement jointsNameArr = new XElement("Name_array", new XAttribute("id", meshes.name + "-Joints-array"), new XAttribute("count", meshes.joints.Count));
-                    foreach (var joint in meshes.joints)
+                    XElement jointsNameArr = new XElement("Name_array", new XAttribute("id", meshes.name + "-Joints-array"), new XAttribute("count", mesh.skeleton.Count));
+                    foreach (var joint in mesh.skeleton)
                     {
-                        jointsNameArr.Add(mesh.skeleton[joint].name + " ");
+                        jointsNameArr.Add(joint.name + " ");
                     }
                     srcJoints.Add(jointsNameArr);
                     XElement techCommon = new XElement("technique_common");
                     XElement accessor = new XElement("accessor", 
                         new XAttribute("source", "#" + meshes.name + "-Joints-array"), 
-                        new XAttribute("count", meshes.joints.Count), 
+                        new XAttribute("count", mesh.skeleton.Count), 
                         new XAttribute("stride", 1));
                     XElement param = new XElement("param", 
                         new XAttribute("name", "JOINT"), 
@@ -370,6 +401,7 @@ namespace Multi_Tool.Result_Windows
                     // Weights
                     XElement srcWeights = new XElement("source", new XAttribute("id", meshes.name + "-Weights"));
                     List<float> weights = FileUtils.ReadNumberVectorToList(meshes.vertexData.weights, 0);
+                    if(weights == null) { weights = new List<float>(0); }
                     XElement floatArr = new XElement("float_array", new XAttribute("id", meshes.name + "-Weights-array"), new XAttribute("count", weights.Count));
                     floatArr.Add(string.Join(" ", weights));
                     srcWeights.Add(floatArr);
@@ -389,8 +421,9 @@ namespace Multi_Tool.Result_Windows
                     // Inv Binds
                     XElement srcBinds = new XElement("source", new XAttribute("id", meshes.name + "-Inv_Bind_Mats"));
                     List<float> bindMats = FileUtils.ReadNumberVectorToList(meshes.vertexData.joints, 0);
+                    if (bindMats == null) { bindMats = new List<float>(0); }
                     XElement floatBindArr = new XElement("float_array", new XAttribute("id", meshes.name + "-Inv_Bind_Mats-array"), new XAttribute("count", bindMats.Count));
-                    floatBindArr.Add(string.Join(" ", bindMats));
+                    floatBindArr.Add(string.Join(" ", meshes.joints != null ? meshes.joints : new List<int>(0)));
                     srcBinds.Add(floatBindArr);
                     techCommon = new XElement("technique_common");
                     accessor = new XElement("accessor",
@@ -517,41 +550,85 @@ namespace Multi_Tool.Result_Windows
         {
             Debug.Write("Reading Geo UV Coordinates...");
             List<float> floats = new List<float>();
-            XElement sourceUV = new XElement(xnl + "source", new XAttribute("id", "Color-Unused-uv-0"));
-            meshData.vertexData.texCoords["Color-Unused-uv-0"].data.Position = 0;
-            List<float> uvCoords = FileUtils.ReadNumberVectorToList(meshData.vertexData.texCoords["Color-Unused-uv-0"].data, 0, 2);
-            for (int i = 1; i < uvCoords.Count; i += 2)
+            List<float> uvCoords = new List<float>();
+            XElement posArray = new XElement(xnl + "float_array");
+            XElement sourceUV = new XElement(xnl + "source");
+            if (meshData.vertexData.texCoords.ContainsKey("Color-Unused-uv-0"))
             {
-                uvCoords[i] = -uvCoords[i] + 1;
-            }
-            XElement posArray = new XElement(xnl + "float_array",
-                new XAttribute("id", "Color-Unused-uv-0" + "-Mesh-Map_Array"),
-                new XAttribute("count", uvCoords.Count));
-            foreach (var coord in uvCoords)
-            {
-                floats.Add(coord);
-                if (floats.Count >= 2)
+                sourceUV = new XElement(xnl + "source", new XAttribute("id", "Color-Unused-uv-0"));
+                meshData.vertexData.texCoords["Color-Unused-uv-0"].data.Position = 0;
+                uvCoords = FileUtils.ReadNumberVectorToList(meshData.vertexData.texCoords["Color-Unused-uv-0"].data, 0, 2);
+                for (int i = 1; i < uvCoords.Count; i += 2)
                 {
-                    XText pos = new XText(string.Join(' ', floats.ToArray()) + " ");
-                    posArray.Add(pos);
-                    floats = new List<float>();
+                    uvCoords[i] = -uvCoords[i] + 1;
                 }
+                posArray = new XElement(xnl + "float_array",
+                    new XAttribute("id", "Color-Unused-uv-0" + "-Mesh-Map_Array"),
+                    new XAttribute("count", uvCoords.Count));
+                foreach (var coord in uvCoords)
+                {
+                    floats.Add(coord);
+                    if (floats.Count >= 2)
+                    {
+                        XText pos = new XText(string.Join(' ', floats.ToArray()) + " ");
+                        posArray.Add(pos);
+                        floats = new List<float>();
+                    }
+                }
+                sourceUV.Add(posArray);
+                XElement technique = new XElement(xnl + "technique_common");
+                XElement accessor = new XElement(xnl + "accessor",
+                    new XAttribute("source", "#Color-Unused-uv-0" + "-Mesh-Map_Array"),
+                    new XAttribute("count", (uvCoords.Count / 2)),
+                    new XAttribute("stride", 2));
+                XElement xAxis = new XElement(xnl + "param",
+                    new XAttribute("name", "S"),
+                    new XAttribute("type", "float"));
+                XElement yAxis = new XElement(xnl + "param",
+                    new XAttribute("name", "T"),
+                    new XAttribute("type", "float"));
+                accessor.Add(xAxis, yAxis);
+                technique.Add(accessor);
+                sourceUV.Add(technique);
             }
-            sourceUV.Add(posArray);
-            XElement technique = new XElement(xnl + "technique_common");
-            XElement accessor = new XElement(xnl + "accessor",
-                new XAttribute("source", "#Color-Unused-uv-0" + "-Mesh-Map_Array"),
-                new XAttribute("count", (uvCoords.Count / 2)),
-                new XAttribute("stride", 2));
-            XElement xAxis = new XElement(xnl + "param",
-                new XAttribute("name", "S"),
-                new XAttribute("type", "float"));
-            XElement yAxis = new XElement(xnl + "param",
-                new XAttribute("name", "T"),
-                new XAttribute("type", "float"));
-            accessor.Add(xAxis, yAxis);
-            technique.Add(accessor);
-            sourceUV.Add(technique);
+            else if (meshData.vertexData.texCoords.ContainsKey("Color-Unused-uv-1"))
+            {
+                sourceUV = new XElement(xnl + "source", new XAttribute("id", "Color-Unused-uv-1"));
+                meshData.vertexData.texCoords["Color-Unused-uv-1"].data.Position = 0;
+                uvCoords = FileUtils.ReadNumberVectorToList(meshData.vertexData.texCoords["Color-Unused-uv-1"].data, 0, 2);
+                for (int i = 1; i < uvCoords.Count; i += 2)
+                {
+                    uvCoords[i] = -uvCoords[i] + 1;
+                }
+                posArray = new XElement(xnl + "float_array",
+                    new XAttribute("id", "Color-Unused-uv-1" + "-Mesh-Map_Array"),
+                    new XAttribute("count", uvCoords.Count));
+                foreach (var coord in uvCoords)
+                {
+                    floats.Add(coord);
+                    if (floats.Count >= 2)
+                    {
+                        XText pos = new XText(string.Join(' ', floats.ToArray()) + " ");
+                        posArray.Add(pos);
+                        floats = new List<float>();
+                    }
+                }
+                sourceUV.Add(posArray);
+                XElement technique = new XElement(xnl + "technique_common");
+                XElement accessor = new XElement(xnl + "accessor",
+                    new XAttribute("source", "#Color-Unused-uv-1" + "-Mesh-Map_Array"),
+                    new XAttribute("count", (uvCoords.Count / 2)),
+                    new XAttribute("stride", 2));
+                XElement xAxis = new XElement(xnl + "param",
+                    new XAttribute("name", "S"),
+                    new XAttribute("type", "float"));
+                XElement yAxis = new XElement(xnl + "param",
+                    new XAttribute("name", "T"),
+                    new XAttribute("type", "float"));
+                accessor.Add(xAxis, yAxis);
+                technique.Add(accessor);
+                sourceUV.Add(technique);
+            }
             return sourceUV;
         }
 
@@ -574,6 +651,15 @@ namespace Multi_Tool.Result_Windows
                 XElement inputTexCoord = new XElement(xnl + "input",
                 new XAttribute("semantic", "TEXCOORD"),
                 new XAttribute("source", "#Color-Unused-uv-0"),
+                new XAttribute("offset", 0),
+                new XAttribute("set", 0));
+                tris.Add(inputVertex, inputNormal, inputTexCoord);
+            }
+            else if (meshData.vertexData.texCoords.ContainsKey("Color-Unused-uv-1"))
+            {
+                XElement inputTexCoord = new XElement(xnl + "input",
+                new XAttribute("semantic", "TEXCOORD"),
+                new XAttribute("source", "#Color-Unused-uv-1"),
                 new XAttribute("offset", 0),
                 new XAttribute("set", 0));
                 tris.Add(inputVertex, inputNormal, inputTexCoord);
@@ -640,10 +726,13 @@ namespace Multi_Tool.Result_Windows
             {
                 XElement node = new XElement(xnl + "node", new XAttribute("id", mesh.meshes[i].name), new XAttribute("type", "NODE"));
                 XElement instController = new XElement(xnl + "instance_controller", new XAttribute("url", "#" + mesh.meshes[i].name + "-skin"));
-                for (int joint = 0; joint < mesh.meshes[i].joints.Count; joint++)
+                if (mesh.meshes[i].joints != null)
                 {
-                    XElement skeleton = new XElement(xnl + "skeleton", new XText("#" + mesh.skeleton[mesh.meshes[i].joints[joint]].name));
-                    instController.Add(skeleton);
+                    for (int joint = 0; joint < mesh.meshes[i].joints.Count; joint++)
+                    {
+                        XElement skeleton = new XElement(xnl + "skeleton", new XText("#" + mesh.skeleton[mesh.meshes[i].joints[joint]].name));
+                        instController.Add(skeleton);
+                    }
                 }
                 XElement bindMat = new XElement(xnl + "bind_material");
                 XElement techCommon = new XElement(xnl + "technique_common");
