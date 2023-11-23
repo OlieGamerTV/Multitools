@@ -17,13 +17,19 @@ Some functions were made for a more overall general use, and others were made fo
   * PVR2 files -> PVR3 files
 
 * Common File Compression / Decompression
-  * ZLIB
-  * DEFLATE
+  * ZLIB / Deflate
+ 
+* Other File Compression / Decompression
+  * XOR Key Encryption
+
 * File Package Compression / Decompression
   * SERF (Decompression only, Microsoft Tinker Data File)
-  * DPAK
+  * DPAK (Disney Package File)
 
 * Other Misc. Functions
-  * .mmf/.mma File Data Reading ("Adobe" Alpine Model/Animation Files)
+  * .mmf/.mmt/.mma File Data Reading (Alpine Model File / Model Texture / Model Animation)
        * Exporting .mmf to Standard Model Files (W.I.P).
-         * Supported Export Formats: .dae
+         * Supported Export Formats: Collada DAE Model File (.dae)
+       * Exporting .mma to Animation Files (W.I.P).
+         * Supported Export Formats: 3ds Max Animation File (.xaf)
+       * Exporting .mmt to contained image file. 
