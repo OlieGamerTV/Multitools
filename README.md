@@ -33,3 +33,6 @@ Some functions were made for a more overall general use, and others were made fo
        * Exporting .mma to Animation Files (W.I.P).
          * Supported Export Formats: 3ds Max Animation File (.xaf)
        * Exporting .mmt to contained image file. 
+
+## Special Thanks
+* [DSDecmp](https://github.com/barubary/dsdecmp) for its various compression/decompression utilities.
